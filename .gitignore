@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+vendor/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+coverage/
+.next/
+.turbo/
+playwright-report/
+test-results/
+
+# Runtime and local state
+*.log
+.env
+.env.*
+!.env.example
+supabase/.temp/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Infrastructure state
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Temporary files
+tmp/
+temp/
+.cache/

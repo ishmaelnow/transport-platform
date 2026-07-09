@@ -1,0 +1,2 @@
+-- Local development seed file.
+-- Do not add transportation business data until business schemas exist.
