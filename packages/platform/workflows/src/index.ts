@@ -1,11 +1,12 @@
+import type { ActorId, CorrelationId, TenantId } from "@transport-platform/auth";
 import type { PlatformEvent } from "@transport-platform/events";
 
 export type WorkflowName = string;
 
 export type WorkflowContext = {
-  correlationId: string;
-  tenantId?: string;
-  actorId?: string;
+  correlationId: CorrelationId;
+  tenantId?: TenantId;
+  actorId?: ActorId;
 };
 
 export type WorkflowResult<TEvent extends PlatformEvent<string, Record<string, unknown>>> = {

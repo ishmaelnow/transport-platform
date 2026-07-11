@@ -1,3 +1,5 @@
-export function createTestCorrelationId(prefix = "test") {
-  return `${prefix}-${crypto.randomUUID()}`;
+import { asCorrelationId, type CorrelationId } from "@transport-platform/auth";
+
+export function createTestCorrelationId(prefix = "test"): CorrelationId {
+  return asCorrelationId(`${prefix}-${crypto.randomUUID()}`);
 }

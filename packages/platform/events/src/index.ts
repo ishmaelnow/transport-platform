@@ -1,4 +1,4 @@
-import type { ActorId, TenantId } from "@transport-platform/auth";
+import type { ActorId, AuditContext, CorrelationId, TenantId } from "@transport-platform/auth";
 
 export type PlatformEventName = string;
 
@@ -12,7 +12,8 @@ export type PlatformEvent<
   payload: TPayload;
   actorId?: ActorId;
   tenantId?: TenantId;
-  correlationId?: string;
+  correlationId?: CorrelationId;
+  auditContext?: AuditContext;
 };
 
 export function createPlatformEvent<
@@ -26,3 +27,19 @@ export function createPlatformEvent<
     occurredAt: input.occurredAt ?? new Date().toISOString(),
   };
 }
+
+export type AuditCompatiblePlatformEvent<
+  TName extends PlatformEventName,
+  TPayload extends Record<string, unknown>,
+> = PlatformEvent<TName, TPayload> & {
+  auditContext: AuditContext;
+};
+
+export type AuditEvent<
+  TName extends PlatformEventName = PlatformEventName,
+  TMetadata extends Record<string, unknown> = Record<string, unknown>,
+> = {
+  eventName: TName;
+  context: AuditContext;
+  metadata?: TMetadata;
+};

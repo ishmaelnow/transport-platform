@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@transport-platform/auth": "workspace:*",
     "@transport-platform/events": "workspace:*"
   }
 }

@@ -18,6 +18,7 @@ test-results/
 .env.*
 !.env.example
 supabase/.temp/
+supabase/.branches/
 
 # OS and editor files
 .DS_Store

@@ -1,11 +1,13 @@
+import type { ActorId, CorrelationId, TenantId } from "@transport-platform/auth";
+
 export type LogLevel = "debug" | "info" | "warn" | "error";
 
 export type LogContext = {
-  actorId?: string;
-  correlationId?: string;
+  actorId?: ActorId;
+  correlationId?: CorrelationId;
   eventName?: string;
   requestId?: string;
-  tenantId?: string;
+  tenantId?: TenantId;
   workflowName?: string;
 };
 

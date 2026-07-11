@@ -10,5 +10,8 @@
     "lint": "eslint .",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@transport-platform/auth": "workspace:*"
   }
 }
