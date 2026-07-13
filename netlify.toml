@@ -1,0 +1,11 @@
+[build]
+  base = "apps/admin"
+  command = "pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20.19.0"
+  PNPM_VERSION = "10.15.0"
+
+[functions]
+  node_bundler = "esbuild"
