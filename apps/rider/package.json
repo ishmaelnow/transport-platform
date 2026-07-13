@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build --webpack",
+    "build": "next build",
     "dev": "next dev --port 3001",
     "lint": "eslint .",
     "test": "vitest run --passWithNoTests",
@@ -13,7 +13,7 @@
     "@transport-platform/config": "workspace:*",
     "@transport-platform/logger": "workspace:*",
     "@transport-platform/supabase": "workspace:*",
-    "next": "16.2.10",
+    "next": "15.5.20",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   }
