@@ -1,13 +1,92 @@
 import { createClient } from "@supabase/supabase-js";
 import { getPublicSupabaseConfig } from "@transport-platform/config";
-import type { Database } from "./database.types";
+import type { Session, SupabaseClient } from "@supabase/supabase-js";
+import type { Database, Tables, TablesInsert, TablesUpdate } from "./database.types";
 
-export type { Database, Json } from "./database.types";
+export type { Database, Json, Tables, TablesInsert, TablesUpdate } from "./database.types";
+export type SupabaseAuthSession = Session;
+export type TransportSupabaseClient = SupabaseClient<Database>;
+export type PublicSupabaseClientConfig = {
+  url: string;
+  anonKey: string;
+};
 
-export function createBrowserSupabaseClient() {
-  const { url, anonKey } = getPublicSupabaseConfig();
+export const tenantFoundationTables = [
+  "person_profiles",
+  "tenants",
+  "tenant_configurations",
+  "tenant_capabilities",
+  "tenant_memberships",
+  "tenant_invitations",
+  "platform_role_assignments",
+  "tenant_role_assignments",
+  "tenant_audit_events",
+  "active_tenant_preferences",
+] as const;
 
-  return createClient<Database>(url, anonKey);
+export type TenantFoundationTable = (typeof tenantFoundationTables)[number];
+
+export type TenantFoundationRow<TTable extends TenantFoundationTable> = Tables<TTable>;
+
+export type TenantFoundationInsert<TTable extends TenantFoundationTable> = TablesInsert<TTable>;
+
+export type TenantFoundationUpdate<TTable extends TenantFoundationTable> = TablesUpdate<TTable>;
+
+export type PersonProfileRow = Tables<"person_profiles">;
+export type TenantRow = Tables<"tenants">;
+export type TenantConfigurationRow = Tables<"tenant_configurations">;
+export type TenantCapabilityRow = Tables<"tenant_capabilities">;
+export type TenantMembershipRow = Tables<"tenant_memberships">;
+export type TenantInvitationRow = Tables<"tenant_invitations">;
+export type PlatformRoleAssignmentRow = Tables<"platform_role_assignments">;
+export type TenantRoleAssignmentRow = Tables<"tenant_role_assignments">;
+export type TenantAuditEventRow = Tables<"tenant_audit_events">;
+export type ActiveTenantPreferenceRow = Tables<"active_tenant_preferences">;
+
+declare global {
+  var __transportPlatformBrowserSupabaseClient: TransportSupabaseClient | undefined;
+}
+
+export function createBrowserSupabaseClient(config?: PublicSupabaseClientConfig) {
+  if (globalThis.__transportPlatformBrowserSupabaseClient) {
+    return globalThis.__transportPlatformBrowserSupabaseClient;
+  }
+
+  const { url, anonKey } = config ?? getPublicSupabaseConfig();
+
+  globalThis.__transportPlatformBrowserSupabaseClient = createClient<Database>(url, anonKey);
+
+  return globalThis.__transportPlatformBrowserSupabaseClient;
+}
+
+export function createAuthenticatedSupabaseClient(
+  accessToken: string,
+  source: NodeJS.ProcessEnv = process.env,
+) {
+  const { url, anonKey } = getPublicSupabaseConfig(source);
+
+  return createClient<Database>(url, anonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+    global: {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  });
+}
+
+export function createAnonymousSupabaseClient(source: NodeJS.ProcessEnv = process.env) {
+  const { url, anonKey } = getPublicSupabaseConfig(source);
+
+  return createClient<Database>(url, anonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }
 
 export function createServiceSupabaseClient(source: NodeJS.ProcessEnv = process.env) {

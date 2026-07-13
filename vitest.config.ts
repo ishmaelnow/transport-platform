@@ -1,13 +1,49 @@
 import { defineConfig } from "vitest/config";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./apps/admin/src", import.meta.url)),
+      "@transport-platform/auth": fileURLToPath(
+        new URL("./packages/platform/auth/src/index.ts", import.meta.url),
+      ),
+      "@transport-platform/config": fileURLToPath(
+        new URL("./packages/platform/config/src/index.ts", import.meta.url),
+      ),
+      "@transport-platform/events": fileURLToPath(
+        new URL("./packages/platform/events/src/index.ts", import.meta.url),
+      ),
+      "@transport-platform/logger": fileURLToPath(
+        new URL("./packages/platform/logger/src/index.ts", import.meta.url),
+      ),
+      "@transport-platform/supabase": fileURLToPath(
+        new URL("./packages/platform/supabase/src/index.ts", import.meta.url),
+      ),
+      "@transport-platform/testing": fileURLToPath(
+        new URL("./packages/platform/testing/src/index.ts", import.meta.url),
+      ),
+      "@transport-platform/workflows": fileURLToPath(
+        new URL("./packages/platform/workflows/src/index.ts", import.meta.url),
+      ),
+    },
+  },
   test: {
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],
     },
     environment: "node",
+    env: {
+      NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
+    },
     globals: false,
-    include: ["packages/**/*.test.ts", "tests/unit/**/*.test.ts", "tests/integration/**/*.test.ts"],
+    include: [
+      "apps/**/*.test.ts",
+      "packages/**/*.test.ts",
+      "tests/unit/**/*.test.ts",
+      "tests/integration/**/*.test.ts",
+    ],
   },
 });

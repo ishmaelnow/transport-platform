@@ -1,0 +1,145 @@
+import type { TenantMembershipRow, TenantRoleAssignmentRow } from "@transport-platform/supabase";
+import type { AdminSupabaseClient } from "./context";
+import type { MembershipWithRoles, TenantMemberDirectoryPerson, TenantSummary } from "./types";
+
+export async function loadTenantSummary(
+  supabase: AdminSupabaseClient,
+  tenantId: string,
+): Promise<TenantSummary> {
+  const [
+    tenantResult,
+    configurationResult,
+    capabilitiesResult,
+    membershipsResult,
+    invitationsResult,
+    roleAssignmentsResult,
+    auditResult,
+  ] = await Promise.all([
+    supabase.from("tenants").select("*").eq("tenant_id", tenantId).single(),
+    supabase.from("tenant_configurations").select("*").eq("tenant_id", tenantId).maybeSingle(),
+    supabase
+      .from("tenant_capabilities")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .order("capability_key", { ascending: true }),
+    supabase
+      .from("tenant_memberships")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("tenant_invitations")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("tenant_role_assignments")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("tenant_audit_events")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .order("occurred_at", { ascending: false })
+      .limit(12),
+  ]);
+
+  if (tenantResult.error) {
+    throw tenantResult.error;
+  }
+
+  if (configurationResult.error) {
+    throw configurationResult.error;
+  }
+
+  if (capabilitiesResult.error) {
+    throw capabilitiesResult.error;
+  }
+
+  if (membershipsResult.error) {
+    throw membershipsResult.error;
+  }
+
+  if (invitationsResult.error) {
+    throw invitationsResult.error;
+  }
+
+  if (roleAssignmentsResult.error) {
+    throw roleAssignmentsResult.error;
+  }
+
+  if (auditResult.error) {
+    throw auditResult.error;
+  }
+
+  const roleAssignments = roleAssignmentsResult.data ?? [];
+  const memberships = await attachMembershipDetails(
+    supabase,
+    membershipsResult.data ?? [],
+    roleAssignments,
+  );
+
+  return {
+    tenant: tenantResult.data,
+    configuration: configurationResult.data ?? null,
+    capabilities: capabilitiesResult.data ?? [],
+    memberships,
+    invitations: invitationsResult.data ?? [],
+    roleAssignments,
+    auditEvents: auditResult.data ?? [],
+  };
+}
+
+async function attachMembershipDetails(
+  supabase: AdminSupabaseClient,
+  memberships: TenantMembershipRow[],
+  roleAssignments: readonly TenantRoleAssignmentRow[],
+): Promise<MembershipWithRoles[]> {
+  const visiblePeople = await loadTenantMemberDirectory(supabase, memberships[0]?.tenant_id);
+
+  return memberships.map((membership) => ({
+    ...membership,
+    person: visiblePeople.get(membership.person_id),
+    roles: roleAssignments.filter(
+      ({ membership_id }) => membership_id === membership.membership_id,
+    ),
+  }));
+}
+
+async function loadTenantMemberDirectory(
+  supabase: AdminSupabaseClient,
+  tenantId: string | undefined,
+): Promise<Map<string, TenantMemberDirectoryPerson>> {
+  if (!tenantId) {
+    return new Map();
+  }
+
+  const { data, error } = await supabase.rpc("tenant_member_directory", {
+    target_tenant_id: tenantId,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return new Map(
+    (data ?? []).map((person) => [
+      person.person_id,
+      {
+        person_id: person.person_id,
+        display_name: person.display_name,
+        primary_email: person.primary_email,
+        status: person.person_status,
+      },
+    ]),
+  );
+}
+
+export function countPendingInvitations(invitations: readonly { status: string }[]) {
+  return invitations.filter(({ status }) => status === "pending").length;
+}
+
+export function countActiveMemberships(memberships: readonly { status: string }[]) {
+  return memberships.filter(({ status }) => status === "active").length;
+}
