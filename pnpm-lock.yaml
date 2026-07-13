@@ -9,6 +9,16 @@ overrides:
 
 importers:
   .:
+    dependencies:
+      next:
+        specifier: 16.2.10
+        version: 16.2.10(@playwright/test@1.54.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react:
+        specifier: 19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: 19.1.0
+        version: 19.1.0(react@19.1.0)
     devDependencies:
       "@eslint/js":
         specifier: 9.32.0
