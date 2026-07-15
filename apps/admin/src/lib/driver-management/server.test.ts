@@ -16,4 +16,9 @@ describe("driver management validation", () => {
     expect(() => validateDriverStatusInput({ status: "suspended" })).toThrow(/reason is required/);
     expect(validateDriverStatusInput({ status: "active" })).toEqual({ status: "active", reason: null });
   });
+
+  it("rejects human names as driver numbers", () => {
+    expect(() => validateDriverProfileInput({ driverNumber: "First Driver", displayName: "Joe Blo" }))
+      .toThrow(/Driver number must be/);
+  });
 });

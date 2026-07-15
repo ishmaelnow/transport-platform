@@ -919,6 +919,7 @@ function DriversPanel({
             disabled={!enabled || !canManageTenant}
             label="Driver number"
             name="driverNumber"
+            placeholder="DRV-001"
             setForm={(u) => setForm((current) => u(current))}
             value={form.driverNumber}
           />
@@ -1081,6 +1082,7 @@ function DriverTextInput({
   disabled,
   label,
   name,
+  placeholder,
   setForm,
   type = "text",
   value,
@@ -1088,6 +1090,7 @@ function DriverTextInput({
   disabled: boolean;
   label: string;
   name: keyof DriverForm;
+  placeholder?: string;
   setForm: (updater: (form: DriverForm) => DriverForm) => void;
   type?: string;
   value: string;
@@ -1098,6 +1101,7 @@ function DriverTextInput({
       <input
         disabled={disabled}
         name={name}
+        placeholder={placeholder}
         onChange={(event) => setForm((form) => ({ ...form, [name]: event.target.value }))}
         type={type}
         value={value}
