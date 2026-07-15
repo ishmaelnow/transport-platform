@@ -14,11 +14,15 @@ These values are safe for client components and browser Supabase access:
 These values must only be read by server routes and server-side helpers:
 
 - `RESEND_API_KEY`: Resend API key for invitation email delivery.
+- `RESEND_WEBHOOK_SECRET`: signing secret used to authenticate Resend webhook requests.
+- `SUPABASE_SERVICE_ROLE_KEY`: server-only Supabase secret used by verified webhooks to update delivery state.
 - `INVITATION_FROM_EMAIL`: verified sender used for invitation emails.
 - `INVITATION_BASE_URL`: base URL used to generate invitation links.
 - `TENANT_ADMIN_BASE_URL`: base URL used after successful invitation acceptance.
 
-`RESEND_API_KEY` must never be imported into client components or exposed through public config.
+`RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`, and `SUPABASE_SERVICE_ROLE_KEY` must never be imported
+into client components or exposed through public config. The Supabase service-role/secret key bypasses
+RLS and must only be available to trusted server code.
 
 ## Local Development
 
