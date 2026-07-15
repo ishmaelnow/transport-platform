@@ -906,9 +906,13 @@ function DriversPanel({
   }
 
   async function updateChecklist(driverProfileId: string, field: "personalDetailsComplete" | "personalPhotoComplete" | "vehicleDetailsComplete" | "vehiclePhotoComplete" | "documentsReviewed", value: boolean) {
+    const scrollY = window.scrollY;
     const result = await updateDriverOnboarding(session, summary.tenant.tenant_id, driverProfileId, { [field]: value });
     if (!result.ok) window.alert(result.message);
-    else onRefresh();
+    else {
+      onRefresh();
+      window.setTimeout(() => window.scrollTo({ top: scrollY, behavior: "instant" }), 0);
+    }
   }
 
   async function reviewChecklist(driverProfileId: string, reviewStatus: "approved" | "rejected") {
@@ -1016,7 +1020,8 @@ function DriversPanel({
                       <button
                         className="secondary-button"
                         disabled={!canManageTenant || !enabled}
-                        onClick={() => {
+                        onClick={(event) => {
+                          event.preventDefault();
                           setEditingId(driver.driver_profile_id);
                           setForm({
                             driverNumber: driver.driver_number,
