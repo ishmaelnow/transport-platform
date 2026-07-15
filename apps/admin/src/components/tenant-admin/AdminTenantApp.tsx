@@ -1030,6 +1030,7 @@ function DriversPanel({
                             phone: driver.phone ?? "",
                             onboardingDate: driver.onboarding_date ?? "",
                           });
+                          window.setTimeout(() => document.querySelector("form.settings-grid")?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
                         }}
                         type="button"
                       >
@@ -1080,7 +1081,7 @@ function DriversPanel({
                         if (!checklist) return null;
                         const complete = checklist.personal_details_complete && checklist.personal_photo_complete && checklist.vehicle_details_complete && checklist.vehicle_photo_complete && checklist.documents_reviewed;
                         return (
-                          <div className="row-actions">
+                          <div className="onboarding-checklist">
                             <span>Onboarding: {checklist.review_status}</span>
                             {(["personal_details_complete", "personal_photo_complete", "vehicle_details_complete", "vehicle_photo_complete", "documents_reviewed"] as const).map((field) => (
                               <label key={field}>
