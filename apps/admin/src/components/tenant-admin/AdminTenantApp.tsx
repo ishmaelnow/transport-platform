@@ -1100,9 +1100,16 @@ function DriverTextInput({
       {label}
       <input
         disabled={disabled}
+        inputMode={name === "driverNumber" ? "numeric" : undefined}
+        maxLength={name === "driverNumber" ? 32 : undefined}
         name={name}
         placeholder={placeholder}
-        onChange={(event) => setForm((form) => ({ ...form, [name]: event.target.value }))}
+        onChange={(event) =>
+          setForm((form) => ({
+            ...form,
+            [name]: name === "driverNumber" ? event.target.value.replace(/\D/g, "") : event.target.value,
+          }))
+        }
         type={type}
         value={value}
       />

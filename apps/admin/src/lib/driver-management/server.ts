@@ -36,8 +36,8 @@ function requireRecord(value: unknown): Record<string, unknown> {
 function requiredText(value: unknown, label: string) {
   if (typeof value !== "string" || !value.trim()) throw new Error(`${label} is required.`);
   const text = value.trim();
-  if (label === "Driver number" && !/^[A-Za-z0-9][A-Za-z0-9_-]{1,31}$/.test(text)) {
-    throw new Error("Driver number must be 2-32 characters using letters, numbers, hyphens, or underscores.");
+  if (label === "Driver number" && !/^\d{1,32}$/.test(text)) {
+    throw new Error("Driver number must contain only numbers (up to 32 digits).");
   }
   return text;
 }
