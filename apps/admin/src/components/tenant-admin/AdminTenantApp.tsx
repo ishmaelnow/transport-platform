@@ -866,6 +866,9 @@ function DriversPanel({
   });
   const [message, setMessage] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [checklists, setChecklists] = useState(summary.driverOnboarding);
+
+  useEffect(() => setChecklists(summary.driverOnboarding), [summary.driverOnboarding]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -906,13 +909,9 @@ function DriversPanel({
   }
 
   async function updateChecklist(driverProfileId: string, field: "personalDetailsComplete" | "personalPhotoComplete" | "vehicleDetailsComplete" | "vehiclePhotoComplete" | "documentsReviewed", value: boolean) {
-    const scrollY = window.scrollY;
     const result = await updateDriverOnboarding(session, summary.tenant.tenant_id, driverProfileId, { [field]: value });
     if (!result.ok) window.alert(result.message);
-    else {
-      onRefresh();
-      window.setTimeout(() => window.scrollTo({ top: scrollY, behavior: "instant" }), 0);
-    }
+    else setChecklists((current) => current.map((item) => item.driver_profile_id === driverProfileId ? { ...item, [{ personalDetailsComplete: "personal_details_complete", personalPhotoComplete: "personal_photo_complete", vehicleDetailsComplete: "vehicle_details_complete", vehiclePhotoComplete: "vehicle_photo_complete", documentsReviewed: "documents_reviewed" }[field]]: value } : item));
   }
 
   async function reviewChecklist(driverProfileId: string, reviewStatus: "approved" | "rejected") {
@@ -920,7 +919,7 @@ function DriversPanel({
     if (reviewStatus === "rejected" && !reviewNotes) return;
     const result = await updateDriverOnboarding(session, summary.tenant.tenant_id, driverProfileId, { reviewStatus, reviewNotes });
     if (!result.ok) window.alert(result.message);
-    else onRefresh();
+    else setChecklists((current) => current.map((item) => item.driver_profile_id === driverProfileId ? { ...item, review_status: reviewStatus, review_notes: reviewNotes } : item));
   }
 
   return (
@@ -1077,7 +1076,7 @@ function DriversPanel({
                         </button>
                       ) : null}
                       {(() => {
-                        const checklist = summary.driverOnboarding.find((item) => item.driver_profile_id === driver.driver_profile_id);
+                        const checklist = checklists.find((item) => item.driver_profile_id === driver.driver_profile_id);
                         if (!checklist) return null;
                         const complete = checklist.personal_details_complete && checklist.personal_photo_complete && checklist.vehicle_details_complete && checklist.vehicle_photo_complete && checklist.documents_reviewed;
                         return (
