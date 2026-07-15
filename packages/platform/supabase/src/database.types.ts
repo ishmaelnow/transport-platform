@@ -28,6 +28,86 @@ export type Database = {
   };
   public: {
     Tables: {
+      driver_profiles: {
+        Row: {
+          created_at: string;
+          created_by_person_id: string;
+          display_name: string;
+          driver_number: string;
+          driver_profile_id: string;
+          email: string | null;
+          onboarding_date: string | null;
+          person_id: string | null;
+          phone: string | null;
+          status: string;
+          status_reason: string | null;
+          tenant_id: string;
+          updated_at: string;
+          updated_by_person_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by_person_id: string;
+          display_name: string;
+          driver_number: string;
+          driver_profile_id?: string;
+          email?: string | null;
+          onboarding_date?: string | null;
+          person_id?: string | null;
+          phone?: string | null;
+          status?: string;
+          status_reason?: string | null;
+          tenant_id: string;
+          updated_at?: string;
+          updated_by_person_id: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by_person_id?: string;
+          display_name?: string;
+          driver_number?: string;
+          driver_profile_id?: string;
+          email?: string | null;
+          onboarding_date?: string | null;
+          person_id?: string | null;
+          phone?: string | null;
+          status?: string;
+          status_reason?: string | null;
+          tenant_id?: string;
+          updated_at?: string;
+          updated_by_person_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "driver_profiles_created_by_person_id_fkey";
+            columns: ["created_by_person_id"];
+            isOneToOne: false;
+            referencedRelation: "person_profiles";
+            referencedColumns: ["person_id"];
+          },
+          {
+            foreignKeyName: "driver_profiles_person_id_fkey";
+            columns: ["person_id"];
+            isOneToOne: false;
+            referencedRelation: "person_profiles";
+            referencedColumns: ["person_id"];
+          },
+          {
+            foreignKeyName: "driver_profiles_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["tenant_id"];
+          },
+          {
+            foreignKeyName: "driver_profiles_updated_by_person_id_fkey";
+            columns: ["updated_by_person_id"];
+            isOneToOne: false;
+            referencedRelation: "person_profiles";
+            referencedColumns: ["person_id"];
+          },
+        ];
+      };
       active_tenant_preferences: {
         Row: {
           membership_id: string;

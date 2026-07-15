@@ -8,6 +8,7 @@ import type {
   TenantMembershipRow,
   TenantRoleAssignmentRow,
   TenantRow,
+  DriverProfileRow,
 } from "@transport-platform/supabase";
 
 export const foundationTenantRoles = ["tenant_owner", "tenant_admin", "tenant_member"] as const;
@@ -41,6 +42,7 @@ export type TenantSummary = {
   invitations: TenantInvitationRow[];
   roleAssignments: TenantRoleAssignmentRow[];
   auditEvents: TenantAuditEventRow[];
+  drivers: DriverProfileRow[];
 };
 
 export type ActiveTenantOption = {

@@ -14,6 +14,7 @@ export async function loadTenantSummary(
     invitationsResult,
     roleAssignmentsResult,
     auditResult,
+    driversResult,
   ] = await Promise.all([
     supabase.from("tenants").select("*").eq("tenant_id", tenantId).single(),
     supabase.from("tenant_configurations").select("*").eq("tenant_id", tenantId).maybeSingle(),
@@ -43,6 +44,11 @@ export async function loadTenantSummary(
       .eq("tenant_id", tenantId)
       .order("occurred_at", { ascending: false })
       .limit(12),
+    supabase
+      .from("driver_profiles")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .order("created_at", { ascending: false }),
   ]);
 
   if (tenantResult.error) {
@@ -73,6 +79,10 @@ export async function loadTenantSummary(
     throw auditResult.error;
   }
 
+  if (driversResult.error && !driversResult.error.message.includes("driver_profiles")) {
+    throw driversResult.error;
+  }
+
   const roleAssignments = roleAssignmentsResult.data ?? [];
   const memberships = await attachMembershipDetails(
     supabase,
@@ -88,6 +98,7 @@ export async function loadTenantSummary(
     invitations: invitationsResult.data ?? [],
     roleAssignments,
     auditEvents: auditResult.data ?? [],
+    drivers: driversResult.data ?? [],
   };
 }
 

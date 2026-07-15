@@ -13,6 +13,7 @@ import {
   provisionTenant,
   resendTenantInvitation,
 } from "@/lib/platform-admin/mutations";
+import { setTenantCapability } from "@/lib/platform-admin/mutations";
 import { loadPlatformAdminSummary } from "@/lib/platform-admin/queries";
 import type { PlatformAdminSummary, TenantProvisioningPayload } from "@/lib/platform-admin/types";
 
@@ -329,6 +330,12 @@ function PlatformProvisioningPanel({
     onRefresh();
   }
 
+  async function handleCapability(tenantId: string, capabilityKey: string, enabled: boolean) {
+    const result = await setTenantCapability(session, tenantId, capabilityKey, enabled);
+    if (!result.ok) window.alert(result.message);
+    else onRefresh();
+  }
+
   async function handleResendInvitation(tenantId: string, invitationId: string) {
     const actionKey = `resend:${invitationId}`;
     setActionMessage(null);
@@ -508,6 +515,29 @@ function PlatformProvisioningPanel({
                           )
                             ? "partially enabled"
                             : "disabled"}
+                          {item.capabilities.some(
+                            ({ capability_key }) => capability_key === "driver.management",
+                          ) ? (
+                            <button
+                              className="secondary-button"
+                              type="button"
+                              onClick={() =>
+                                void handleCapability(
+                                  item.tenant.tenant_id,
+                                  "driver.management",
+                                  !item.capabilities.find(
+                                    ({ capability_key }) => capability_key === "driver.management",
+                                  )?.enabled,
+                                )
+                              }
+                            >
+                              {item.capabilities.find(
+                                ({ capability_key }) => capability_key === "driver.management",
+                              )?.enabled
+                                ? "Disable drivers"
+                                : "Enable drivers"}
+                            </button>
+                          ) : null}
                         </span>
                       </td>
                       <td>

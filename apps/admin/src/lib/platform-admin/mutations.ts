@@ -48,6 +48,19 @@ export async function closeProvisioningTenant(
   });
 }
 
+export async function setTenantCapability(
+  session: SupabaseAuthSession,
+  tenantId: string,
+  capabilityKey: string,
+  enabled: boolean,
+): Promise<MutationResult> {
+  return postPlatformMutation(session, "/api/platform-admin/capabilities", {
+    tenantId,
+    capabilityKey,
+    enabled,
+  });
+}
+
 async function postPlatformMutation(
   session: SupabaseAuthSession,
   path: string,

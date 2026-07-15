@@ -16,6 +16,7 @@ import {
   updateTenantMembershipStatus,
   updateTenantSettings,
 } from "@/lib/tenant-admin/mutations";
+import { createDriver, transitionDriver, updateDriver } from "@/lib/driver-management/mutations";
 import {
   countActiveMemberships,
   countPendingInvitations,
@@ -36,7 +37,8 @@ type ViewKey =
   | "invitations"
   | "roles"
   | "capabilities"
-  | "audit";
+  | "audit"
+  | "drivers";
 
 const views: { key: ViewKey; label: string }[] = [
   { key: "dashboard", label: "Dashboard" },
@@ -46,6 +48,7 @@ const views: { key: ViewKey; label: string }[] = [
   { key: "roles", label: "Roles" },
   { key: "capabilities", label: "Capabilities" },
   { key: "audit", label: "Audit" },
+  { key: "drivers", label: "Drivers" },
 ];
 
 export function AdminTenantApp() {
@@ -396,6 +399,14 @@ function ResolvedWorkspace({
       {activeView === "roles" ? <RolesPanel summary={summary} /> : null}
       {activeView === "capabilities" ? <CapabilitiesPanel summary={summary} /> : null}
       {activeView === "audit" ? <AuditPanel summary={summary} /> : null}
+      {activeView === "drivers" ? (
+        <DriversPanel
+          canManageTenant={canManageTenant}
+          onRefresh={onRefresh}
+          session={session}
+          summary={summary}
+        />
+      ) : null}
     </>
   );
 }
@@ -828,6 +839,270 @@ function InvitationsPanel({
         </div>
       </section>
     </section>
+  );
+}
+
+function DriversPanel({
+  canManageTenant,
+  onRefresh,
+  session,
+  summary,
+}: {
+  canManageTenant: boolean;
+  onRefresh: () => void;
+  session: SupabaseAuthSession;
+  summary: TenantSummary;
+}) {
+  const enabled = summary.capabilities.some(
+    ({ capability_key, enabled }) => capability_key === "driver.management" && enabled,
+  );
+  const [form, setForm] = useState({
+    driverNumber: "",
+    displayName: "",
+    email: "",
+    phone: "",
+    onboardingDate: "",
+  });
+  const [message, setMessage] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setMessage(null);
+    const input = {
+      ...form,
+      email: form.email || null,
+      phone: form.phone || null,
+      personId: null,
+      onboardingDate: form.onboardingDate || null,
+    };
+    const result = editingId
+      ? await updateDriver(session, summary.tenant.tenant_id, editingId, input)
+      : await createDriver(session, summary.tenant.tenant_id, input);
+    if (!result.ok) {
+      setMessage(result.message);
+      return;
+    }
+    setEditingId(null);
+    setForm({ driverNumber: "", displayName: "", email: "", phone: "", onboardingDate: "" });
+    onRefresh();
+  }
+
+  async function changeStatus(
+    driverProfileId: string,
+    status: "draft" | "onboarding" | "active" | "suspended" | "inactive" | "archived",
+  ) {
+    const reason = ["suspended", "inactive", "archived"].includes(status)
+      ? window.prompt("Reason required")
+      : null;
+    if (["suspended", "inactive", "archived"].includes(status) && !reason) return;
+    const result = await transitionDriver(session, summary.tenant.tenant_id, driverProfileId, {
+      status,
+      reason,
+    });
+    if (!result.ok) window.alert(result.message);
+    else onRefresh();
+  }
+
+  return (
+    <section className="content-stack">
+      <section className="panel">
+        <PanelHeader
+          title="Drivers"
+          description="Tenant-scoped driver profiles and administrative lifecycle."
+        />
+        {!enabled ? (
+          <p className="notice">Driver Management is not enabled for this tenant.</p>
+        ) : null}
+        <form className="settings-grid" onSubmit={(event) => void submit(event)}>
+          <DriverTextInput
+            disabled={!enabled || !canManageTenant}
+            label="Driver number"
+            name="driverNumber"
+            setForm={(u) => setForm((current) => u(current))}
+            value={form.driverNumber}
+          />
+          <DriverTextInput
+            disabled={!enabled || !canManageTenant}
+            label="Display name"
+            name="displayName"
+            setForm={(u) => setForm((current) => u(current))}
+            value={form.displayName}
+          />
+          <DriverTextInput
+            disabled={!enabled || !canManageTenant}
+            label="Email"
+            name="email"
+            type="email"
+            setForm={(u) => setForm((current) => u(current))}
+            value={form.email}
+          />
+          <DriverTextInput
+            disabled={!enabled || !canManageTenant}
+            label="Phone"
+            name="phone"
+            setForm={(u) => setForm((current) => u(current))}
+            value={form.phone}
+          />
+          <label>
+            Onboarding date
+            <input
+              disabled={!enabled || !canManageTenant}
+              type="date"
+              value={form.onboardingDate}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, onboardingDate: event.target.value }))
+              }
+            />
+          </label>
+          <button className="primary-button" disabled={!enabled || !canManageTenant} type="submit">
+            {editingId ? "Save driver" : "Create driver"}
+          </button>
+          {editingId ? (
+            <button
+              className="secondary-button"
+              onClick={() => {
+                setEditingId(null);
+                setForm({ driverNumber: "", displayName: "", email: "", phone: "", onboardingDate: "" });
+              }}
+              type="button"
+            >
+              Cancel edit
+            </button>
+          ) : null}
+        </form>
+        {message ? <p className="form-error">{message}</p> : null}
+      </section>
+      <section className="panel">
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Number</th>
+                <th>Driver</th>
+                <th>Status</th>
+                <th>Contact</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {summary.drivers.map((driver) => (
+                <tr key={driver.driver_profile_id}>
+                  <td>{driver.driver_number}</td>
+                  <td>
+                    <strong>{driver.display_name}</strong>
+                    <span>{driver.email ?? "No email"}</span>
+                  </td>
+                  <td>{driver.status}</td>
+                  <td>{driver.phone ?? "No phone"}</td>
+                  <td>
+                    <div className="row-actions">
+                      <button
+                        className="secondary-button"
+                        disabled={!canManageTenant || !enabled}
+                        onClick={() => {
+                          setEditingId(driver.driver_profile_id);
+                          setForm({
+                            driverNumber: driver.driver_number,
+                            displayName: driver.display_name,
+                            email: driver.email ?? "",
+                            phone: driver.phone ?? "",
+                            onboardingDate: driver.onboarding_date ?? "",
+                          });
+                        }}
+                        type="button"
+                      >
+                        Edit
+                      </button>
+                      {driver.status === "draft" ? (
+                        <button
+                          className="secondary-button"
+                          disabled={!canManageTenant || !enabled}
+                          onClick={() => void changeStatus(driver.driver_profile_id, "onboarding")}
+                          type="button"
+                        >
+                          Start onboarding
+                        </button>
+                      ) : null}
+                      {driver.status === "onboarding" ? (
+                        <button
+                          className="secondary-button"
+                          disabled={!canManageTenant || !enabled}
+                          onClick={() => void changeStatus(driver.driver_profile_id, "active")}
+                          type="button"
+                        >
+                          Activate
+                        </button>
+                      ) : null}
+                      {driver.status === "active" ? (
+                        <button
+                          className="danger-button"
+                          disabled={!canManageTenant || !enabled}
+                          onClick={() => void changeStatus(driver.driver_profile_id, "suspended")}
+                          type="button"
+                        >
+                          Suspend
+                        </button>
+                      ) : null}
+                      {driver.status === "suspended" ? (
+                        <button
+                          className="secondary-button"
+                          disabled={!canManageTenant || !enabled}
+                          onClick={() => void changeStatus(driver.driver_profile_id, "active")}
+                          type="button"
+                        >
+                          Reactivate
+                        </button>
+                      ) : null}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {summary.drivers.length === 0 ? (
+          <EmptyState message="No drivers have been created." />
+        ) : null}
+      </section>
+    </section>
+  );
+}
+
+type DriverForm = {
+  driverNumber: string;
+  displayName: string;
+  email: string;
+  phone: string;
+  onboardingDate: string;
+};
+
+function DriverTextInput({
+  disabled,
+  label,
+  name,
+  setForm,
+  type = "text",
+  value,
+}: {
+  disabled: boolean;
+  label: string;
+  name: keyof DriverForm;
+  setForm: (updater: (form: DriverForm) => DriverForm) => void;
+  type?: string;
+  value: string;
+}) {
+  return (
+    <label>
+      {label}
+      <input
+        disabled={disabled}
+        name={name}
+        onChange={(event) => setForm((form) => ({ ...form, [name]: event.target.value }))}
+        type={type}
+        value={value}
+      />
+    </label>
   );
 }
 

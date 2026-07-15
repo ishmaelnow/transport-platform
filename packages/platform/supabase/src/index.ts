@@ -33,6 +33,7 @@ export type TenantFoundationInsert<TTable extends TenantFoundationTable> = Table
 export type TenantFoundationUpdate<TTable extends TenantFoundationTable> = TablesUpdate<TTable>;
 
 export type PersonProfileRow = Tables<"person_profiles">;
+export type DriverProfileRow = Tables<"driver_profiles">;
 export type TenantRow = Tables<"tenants">;
 export type TenantConfigurationRow = Tables<"tenant_configurations">;
 export type TenantCapabilityRow = Tables<"tenant_capabilities">;
