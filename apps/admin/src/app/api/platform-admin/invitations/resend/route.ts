@@ -71,6 +71,7 @@ export async function POST(request: Request) {
 
     try {
       await sendTenantInvitationEmail(config, {
+        invitationId: invitation.invitation_id,
         toEmail: invitation.email,
         tenantDisplayName,
         intendedRole: invitation.intended_role,
@@ -95,14 +96,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ message }, { status: 502 });
     }
 
-    const deliveredAt = new Date().toISOString();
-
     await supabase
       .from("tenant_invitations")
       .update({
-        email_delivery_status: "sent",
+        email_delivery_status: "pending",
         email_delivery_attempted_at: attemptedAt,
-        email_delivered_at: deliveredAt,
+        email_delivered_at: null,
         email_delivery_error: null,
       })
       .eq("invitation_id", invitation.invitation_id)

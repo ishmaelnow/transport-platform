@@ -8,6 +8,7 @@ export type AdminPublicConfig = {
 export type AdminServerConfig = AdminPublicConfig & {
   resend: {
     apiKey: string;
+    webhookSecret: string;
   };
   invitations: {
     fromEmail: string;
@@ -24,6 +25,7 @@ type AdminConfigKey =
   | "NEXT_PUBLIC_SUPABASE_URL"
   | "NEXT_PUBLIC_SUPABASE_ANON_KEY"
   | "RESEND_API_KEY"
+  | "RESEND_WEBHOOK_SECRET"
   | "INVITATION_FROM_EMAIL"
   | "INVITATION_BASE_URL"
   | "TENANT_ADMIN_BASE_URL";
@@ -76,6 +78,7 @@ function readAdminServerConfig(source: AdminConfigSource): AdminServerConfig {
   const supabaseUrl = requiredUrl(source, "NEXT_PUBLIC_SUPABASE_URL", errors);
   const supabaseAnonKey = requiredString(source, "NEXT_PUBLIC_SUPABASE_ANON_KEY", errors);
   const resendApiKey = requiredString(source, "RESEND_API_KEY", errors);
+  const resendWebhookSecret = requiredString(source, "RESEND_WEBHOOK_SECRET", errors);
   const invitationFromEmail = requiredString(source, "INVITATION_FROM_EMAIL", errors);
   const invitationBaseUrl = requiredUrl(source, "INVITATION_BASE_URL", errors);
   const tenantAdminBaseUrl = requiredUrl(source, "TENANT_ADMIN_BASE_URL", errors);
@@ -89,6 +92,7 @@ function readAdminServerConfig(source: AdminConfigSource): AdminServerConfig {
     },
     resend: {
       apiKey: resendApiKey,
+      webhookSecret: resendWebhookSecret,
     },
     invitations: {
       fromEmail: invitationFromEmail,

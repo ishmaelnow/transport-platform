@@ -1,6 +1,7 @@
 import type { AdminServerConfig } from "@/lib/config";
 
 export type InvitationEmailInput = {
+  invitationId: string;
   toEmail: string;
   tenantDisplayName: string;
   intendedRole: string;
@@ -22,6 +23,7 @@ export async function sendTenantInvitationEmail(
       from: config.invitations.fromEmail,
       to: input.toEmail,
       subject: `Invitation to ${input.tenantDisplayName}`,
+      tags: [{ name: "invitation_id", value: input.invitationId }],
       text: [
         `You have been invited to ${input.tenantDisplayName} as ${input.intendedRole}.`,
         "",
@@ -42,6 +44,8 @@ export async function sendTenantInvitationEmail(
     const message = await readResendError(response);
     throw new Error(`Resend invitation email delivery failed: ${message}`);
   }
+
+  return (await response.json()) as { id: string };
 }
 
 export function buildInvitationUrl(baseUrl: string, token: string) {

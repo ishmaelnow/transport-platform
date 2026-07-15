@@ -60,6 +60,7 @@ export async function POST(request: Request) {
 
     try {
       await sendTenantInvitationEmail(config, {
+        invitationId: provisioned.provisioned_invitation_id,
         toEmail: payload.firstOwnerEmail,
         tenantDisplayName: payload.displayName,
         intendedRole: "tenant_owner",
@@ -69,9 +70,9 @@ export async function POST(request: Request) {
       await supabase
         .from("tenant_invitations")
         .update({
-          email_delivery_status: "sent",
+          email_delivery_status: "pending",
           email_delivery_attempted_at: new Date().toISOString(),
-          email_delivered_at: new Date().toISOString(),
+          email_delivered_at: null,
           email_delivery_error: null,
         })
         .eq("invitation_id", provisioned.provisioned_invitation_id);

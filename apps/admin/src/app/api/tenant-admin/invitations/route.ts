@@ -53,27 +53,42 @@ export async function POST(request: Request) {
     }
 
     const invitationToken = createInvitationTokenPair();
-    const { error } = await supabase.from("tenant_invitations").insert({
-      tenant_id: payload.tenantId,
-      email,
-      normalized_email: normalizeEmail(email),
-      intended_role: payload.role,
-      invitation_token_hash: invitationToken.tokenHash,
-      invited_by_person_id: person.person_id,
-      status: "pending",
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    });
+    const { data: invitation, error } = await supabase
+      .from("tenant_invitations")
+      .insert({
+        tenant_id: payload.tenantId,
+        email,
+        normalized_email: normalizeEmail(email),
+        intended_role: payload.role,
+        invitation_token_hash: invitationToken.tokenHash,
+        invited_by_person_id: person.person_id,
+        status: "pending",
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      })
+      .select("invitation_id")
+      .single();
 
     if (error) {
       return NextResponse.json({ message: error.message }, { status: 403 });
     }
 
     await sendTenantInvitationEmail(config, {
+      invitationId: invitation.invitation_id,
       toEmail: email,
       tenantDisplayName: tenantConfiguration.display_name,
       intendedRole: payload.role,
       token: invitationToken.token,
     });
+
+    await supabase
+      .from("tenant_invitations")
+      .update({
+        email_delivery_status: "pending",
+        email_delivery_attempted_at: new Date().toISOString(),
+        email_delivered_at: null,
+        email_delivery_error: null,
+      })
+      .eq("invitation_id", invitation.invitation_id);
 
     return NextResponse.json({ ok: true });
   } catch (error) {
