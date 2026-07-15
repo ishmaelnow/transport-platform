@@ -919,7 +919,7 @@ function DriversPanel({
             disabled={!enabled || !canManageTenant}
             label="Driver number"
             name="driverNumber"
-            placeholder="DRV-001"
+            placeholder="001"
             setForm={(u) => setForm((current) => u(current))}
             value={form.driverNumber}
           />
