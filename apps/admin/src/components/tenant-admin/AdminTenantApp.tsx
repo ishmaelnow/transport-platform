@@ -17,6 +17,7 @@ import {
   updateTenantSettings,
 } from "@/lib/tenant-admin/mutations";
 import { createDriver, transitionDriver, updateDriver } from "@/lib/driver-management/mutations";
+import { updateDriverOnboarding } from "@/lib/driver-management/onboarding";
 import {
   countActiveMemberships,
   countPendingInvitations,
@@ -904,6 +905,20 @@ function DriversPanel({
     else onRefresh();
   }
 
+  async function updateChecklist(driverProfileId: string, field: "personalDetailsComplete" | "personalPhotoComplete" | "vehicleDetailsComplete" | "vehiclePhotoComplete" | "documentsReviewed", value: boolean) {
+    const result = await updateDriverOnboarding(session, summary.tenant.tenant_id, driverProfileId, { [field]: value });
+    if (!result.ok) window.alert(result.message);
+    else onRefresh();
+  }
+
+  async function reviewChecklist(driverProfileId: string, reviewStatus: "approved" | "rejected") {
+    const reviewNotes = reviewStatus === "rejected" ? window.prompt("Reason required") : null;
+    if (reviewStatus === "rejected" && !reviewNotes) return;
+    const result = await updateDriverOnboarding(session, summary.tenant.tenant_id, driverProfileId, { reviewStatus, reviewNotes });
+    if (!result.ok) window.alert(result.message);
+    else onRefresh();
+  }
+
   return (
     <section className="content-stack">
       <section className="panel">
@@ -1055,6 +1070,24 @@ function DriversPanel({
                           Reactivate
                         </button>
                       ) : null}
+                      {(() => {
+                        const checklist = summary.driverOnboarding.find((item) => item.driver_profile_id === driver.driver_profile_id);
+                        if (!checklist) return null;
+                        const complete = checklist.personal_details_complete && checklist.personal_photo_complete && checklist.vehicle_details_complete && checklist.vehicle_photo_complete && checklist.documents_reviewed;
+                        return (
+                          <div className="row-actions">
+                            <span>Onboarding: {checklist.review_status}</span>
+                            {(["personal_details_complete", "personal_photo_complete", "vehicle_details_complete", "vehicle_photo_complete", "documents_reviewed"] as const).map((field) => (
+                              <label key={field}>
+                                <input checked={checklist[field]} disabled={!canManageTenant || !enabled} onChange={(event) => void updateChecklist(driver.driver_profile_id, ({ personal_details_complete: "personalDetailsComplete", personal_photo_complete: "personalPhotoComplete", vehicle_details_complete: "vehicleDetailsComplete", vehicle_photo_complete: "vehiclePhotoComplete", documents_reviewed: "documentsReviewed" } as const)[field], event.target.checked)} type="checkbox" />
+                                {field.replaceAll("_", " ")}
+                              </label>
+                            ))}
+                            <button className="secondary-button" disabled={!canManageTenant || !enabled || !complete} onClick={() => void reviewChecklist(driver.driver_profile_id, "approved")} type="button">Approve onboarding</button>
+                            <button className="danger-button" disabled={!canManageTenant || !enabled} onClick={() => void reviewChecklist(driver.driver_profile_id, "rejected")} type="button">Reject</button>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </td>
                 </tr>

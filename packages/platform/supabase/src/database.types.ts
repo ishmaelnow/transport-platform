@@ -108,6 +108,12 @@ export type Database = {
           },
         ];
       };
+      driver_onboarding_checklists: {
+        Row: { driver_profile_id: string; tenant_id: string; personal_details_complete: boolean; personal_photo_complete: boolean; vehicle_details_complete: boolean; vehicle_photo_complete: boolean; documents_reviewed: boolean; review_status: string; review_notes: string | null; reviewed_by_person_id: string | null; reviewed_at: string | null; created_at: string; updated_at: string };
+        Insert: { driver_profile_id: string; tenant_id: string; personal_details_complete?: boolean; personal_photo_complete?: boolean; vehicle_details_complete?: boolean; vehicle_photo_complete?: boolean; documents_reviewed?: boolean; review_status?: string; review_notes?: string | null; reviewed_by_person_id?: string | null; reviewed_at?: string | null; created_at?: string; updated_at?: string };
+        Update: Partial<Database["public"]["Tables"]["driver_onboarding_checklists"]["Insert"]>;
+        Relationships: [];
+      };
       active_tenant_preferences: {
         Row: {
           membership_id: string;
