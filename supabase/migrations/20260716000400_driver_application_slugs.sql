@@ -1,6 +1,6 @@
 alter table public.tenant_configurations add column if not exists driver_application_slug text;
 create unique index if not exists tenant_configurations_driver_application_slug_idx on public.tenant_configurations (driver_application_slug) where driver_application_slug is not null;
-update public.tenant_configurations set driver_application_slug = lower(regexp_replace(display_name, '[^a-zA-Z0-9]+', '-', 'g')) where driver_application_slug is null;
+update public.tenant_configurations tc set driver_application_slug = lower(regexp_replace(tc.display_name, '[^a-zA-Z0-9]+', '-', 'g')) || '-' || right(tc.tenant_id::text, 8) where tc.driver_application_slug is null;
 create or replace function public.submit_driver_application_by_slug(application_slug text, applicant_name text, applicant_email text, applicant_phone text default null)
 returns uuid language plpgsql security definer set search_path = public as $$
 declare application_id uuid; target_tenant uuid;
