@@ -772,6 +772,7 @@ export type Database = {
       submit_driver_application: { Args: { applicant_email: string; applicant_name: string; applicant_phone?: string | null; target_tenant_id: string }; Returns: string };
       attach_driver_application_files: { Args: { document_path_value?: string | null; personal_path?: string | null; target_application_id: string; vehicle_path?: string | null }; Returns: undefined };
       submit_driver_application_by_slug: { Args: { applicant_email: string; applicant_name: string; applicant_phone?: string | null; application_slug: string }; Returns: string };
+      submit_transport_driver_application: { Args: { applicant_email: string; applicant_name: string; applicant_phone?: string | null; application_tenant_slug: string }; Returns: string };
       current_person_is_active: { Args: never; Returns: boolean };
       current_person_normalized_email: { Args: never; Returns: string };
       has_active_platform_role: {

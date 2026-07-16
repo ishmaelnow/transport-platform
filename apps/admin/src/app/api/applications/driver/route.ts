@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if (typeof tenantSlug !== "string" || typeof fullName !== "string" || typeof email !== "string") throw new Error("Application link, name, and email are required.");
     const supabase = createAnonymousSupabaseClient();
     const phone = form.get("phone");
-    const { data: applicationId, error } = await supabase.rpc("submit_driver_application_by_slug", { application_slug: tenantSlug, applicant_name: fullName, applicant_email: email, applicant_phone: typeof phone === "string" ? phone : null });
+    const { data: applicationId, error } = await supabase.rpc("submit_transport_driver_application", { application_tenant_slug: tenantSlug, applicant_name: fullName, applicant_email: email, applicant_phone: typeof phone === "string" ? phone : null });
     if (error) return NextResponse.json({ message: error.message }, { status: 400 });
     const paths: Record<string, string | null> = { personal: null, vehicle: null, document: null };
     for (const [field, key] of [["personalPhoto", "personal"], ["vehiclePhoto", "vehicle"], ["document", "document"]] as const) {
