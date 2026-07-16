@@ -16,6 +16,7 @@ export async function loadTenantSummary(
     auditResult,
     driversResult,
     onboardingResult,
+    applicationsResult,
   ] = await Promise.all([
     supabase.from("tenants").select("*").eq("tenant_id", tenantId).single(),
     supabase.from("tenant_configurations").select("*").eq("tenant_id", tenantId).maybeSingle(),
@@ -54,6 +55,7 @@ export async function loadTenantSummary(
       .from("driver_onboarding_checklists")
       .select("*")
       .eq("tenant_id", tenantId),
+    supabase.from("driver_applications").select("*").eq("tenant_id", tenantId).order("submitted_at", { ascending: false }),
   ]);
 
   if (tenantResult.error) {
@@ -90,6 +92,7 @@ export async function loadTenantSummary(
   if (onboardingResult.error && !onboardingResult.error.message.includes("driver_onboarding_checklists")) {
     throw onboardingResult.error;
   }
+  if (applicationsResult.error && !applicationsResult.error.message.includes("driver_applications")) throw applicationsResult.error;
 
   const roleAssignments = roleAssignmentsResult.data ?? [];
   const memberships = await attachMembershipDetails(
@@ -108,6 +111,7 @@ export async function loadTenantSummary(
     auditEvents: auditResult.data ?? [],
     drivers: driversResult.data ?? [],
     driverOnboarding: onboardingResult.data ?? [],
+    driverApplications: applicationsResult.data ?? [],
   };
 }
 

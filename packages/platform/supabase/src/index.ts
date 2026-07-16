@@ -34,6 +34,7 @@ export type TenantFoundationUpdate<TTable extends TenantFoundationTable> = Table
 
 export type PersonProfileRow = Tables<"person_profiles">;
 export type DriverProfileRow = Tables<"driver_profiles">;
+export type DriverApplicationRow = Tables<"driver_applications">;
 export type DriverOnboardingChecklistRow = Tables<"driver_onboarding_checklists">;
 export type TenantRow = Tables<"tenants">;
 export type TenantConfigurationRow = Tables<"tenant_configurations">;

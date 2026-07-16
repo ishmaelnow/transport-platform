@@ -39,7 +39,8 @@ type ViewKey =
   | "roles"
   | "capabilities"
   | "audit"
-  | "drivers";
+  | "drivers"
+  | "applications";
 
 const views: { key: ViewKey; label: string }[] = [
   { key: "dashboard", label: "Dashboard" },
@@ -50,6 +51,7 @@ const views: { key: ViewKey; label: string }[] = [
   { key: "capabilities", label: "Capabilities" },
   { key: "audit", label: "Audit" },
   { key: "drivers", label: "Drivers" },
+  { key: "applications", label: "Applications" },
 ];
 
 export function AdminTenantApp() {
@@ -407,6 +409,9 @@ function ResolvedWorkspace({
           session={session}
           summary={summary}
         />
+      ) : null}
+      {activeView === "applications" ? (
+        <DriverApplicationsPanel canManageTenant={canManageTenant} onRefresh={onRefresh} session={session} summary={summary} />
       ) : null}
     </>
   );
@@ -841,6 +846,14 @@ function InvitationsPanel({
       </section>
     </section>
   );
+}
+
+function DriverApplicationsPanel({ canManageTenant, onRefresh, session, summary }: { canManageTenant: boolean; onRefresh: () => void; session: SupabaseAuthSession; summary: TenantSummary }) {
+  async function approve(applicationId: string) {
+    const response = await fetch("/api/tenant-admin/drivers", { method: "PATCH", headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify({ kind: "approve_application", tenantId: summary.tenant.tenant_id, applicationId }) });
+    if (!response.ok) window.alert("Unable to approve application."); else onRefresh();
+  }
+  return <section className="panel"><PanelHeader title="Driver applications" description="Review applicants before creating draft driver profiles." /><div className="table-wrap"><table><thead><tr><th>Applicant</th><th>Contact</th><th>Status</th><th>Action</th></tr></thead><tbody>{summary.driverApplications.map((application) => <tr key={application.driver_application_id}><td>{application.full_name}</td><td>{application.email}<span>{application.phone ?? "No phone"}</span></td><td>{application.application_status}</td><td><button className="primary-button" disabled={!canManageTenant || application.application_status === "approved"} onClick={() => void approve(application.driver_application_id)} type="button">Approve and create draft</button></td></tr>)}</tbody></table></div></section>;
 }
 
 function DriversPanel({

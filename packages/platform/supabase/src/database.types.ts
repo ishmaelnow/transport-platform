@@ -108,6 +108,12 @@ export type Database = {
           },
         ];
       };
+      driver_applications: {
+        Row: { application_status: string; created_at: string; driver_application_id: string; driver_profile_id: string | null; email: string; full_name: string; phone: string | null; review_notes: string | null; reviewed_at: string | null; reviewed_by_person_id: string | null; submitted_at: string; tenant_id: string; updated_at: string };
+        Insert: { application_status?: string; created_at?: string; driver_application_id?: string; driver_profile_id?: string | null; email: string; full_name: string; phone?: string | null; review_notes?: string | null; reviewed_at?: string | null; reviewed_by_person_id?: string | null; submitted_at?: string; tenant_id: string; updated_at?: string };
+        Update: Partial<Database["public"]["Tables"]["driver_applications"]["Insert"]>;
+        Relationships: [];
+      };
       driver_onboarding_checklists: {
         Row: { driver_profile_id: string; tenant_id: string; personal_details_complete: boolean; personal_photo_complete: boolean; vehicle_details_complete: boolean; vehicle_photo_complete: boolean; documents_reviewed: boolean; review_status: string; review_notes: string | null; reviewed_by_person_id: string | null; reviewed_at: string | null; created_at: string; updated_at: string };
         Insert: { driver_profile_id: string; tenant_id: string; personal_details_complete?: boolean; personal_photo_complete?: boolean; vehicle_details_complete?: boolean; vehicle_photo_complete?: boolean; documents_reviewed?: boolean; review_status?: string; review_notes?: string | null; reviewed_by_person_id?: string | null; reviewed_at?: string | null; created_at?: string; updated_at?: string };
@@ -762,6 +768,7 @@ export type Database = {
         }[];
       };
       current_person_id: { Args: never; Returns: string };
+      approve_driver_application: { Args: { actor_id: string; target_application_id: string }; Returns: string };
       current_person_is_active: { Args: never; Returns: boolean };
       current_person_normalized_email: { Args: never; Returns: string };
       has_active_platform_role: {

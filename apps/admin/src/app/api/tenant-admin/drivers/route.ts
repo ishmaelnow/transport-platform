@@ -19,8 +19,14 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as Record<string, unknown>;
     const tenantId = validateTenantId(body.tenantId);
-    const input = validateDriverProfileInput(body);
     const { supabase, personId } = await actor(request);
+    if (body.kind === "application") {
+      if (typeof body.fullName !== "string" || !body.fullName.trim() || typeof body.email !== "string" || !body.email.trim()) throw new Error("Applicant name and email are required.");
+      const { error } = await supabase.from("driver_applications").insert({ tenant_id: tenantId, full_name: body.fullName.trim(), email: body.email.trim().toLowerCase(), phone: typeof body.phone === "string" ? body.phone.trim() || null : null });
+      if (error) return NextResponse.json({ message: error.message }, { status: 400 });
+      return NextResponse.json({ ok: true });
+    }
+    const input = validateDriverProfileInput(body);
     const { error } = await supabase.from("driver_profiles").insert({
       tenant_id: tenantId,
       person_id: input.personId,
@@ -46,9 +52,15 @@ export async function PATCH(request: Request) {
   try {
     const body = (await request.json()) as Record<string, unknown>;
     const tenantId = validateTenantId(body.tenantId);
+    const { supabase, personId } = await actor(request);
+    if (body.kind === "approve_application") {
+      const applicationId = validateTenantId(body.applicationId);
+      const { error } = await supabase.rpc("approve_driver_application", { target_application_id: applicationId, actor_id: personId });
+      if (error) return NextResponse.json({ message: error.message }, { status: 400 });
+      return NextResponse.json({ ok: true });
+    }
     const driverProfileId = validateTenantId(body.driverProfileId);
     const input = validateDriverProfileInput(body);
-    const { supabase, personId } = await actor(request);
     const { error } = await supabase
       .from("driver_profiles")
       .update({
