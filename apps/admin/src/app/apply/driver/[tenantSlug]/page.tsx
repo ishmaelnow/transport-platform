@@ -1,12 +1,14 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
-export default function DriverApplicationPage({ params }: { params: { tenantSlug: string } }) {
+export default function DriverApplicationPage({ params }: { params: Promise<{ tenantSlug: string }> }) {
   const [message, setMessage] = useState<string | null>(null);
+  const [tenantSlug, setTenantSlug] = useState("");
+  useEffect(() => { void params.then(({ tenantSlug: slug }) => setTenantSlug(slug)); }, [params]);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    form.set("tenantSlug", params.tenantSlug);
+    form.set("tenantSlug", tenantSlug);
     const response = await fetch("/api/applications/driver", { method: "POST", body: form });
     const result = (await response.json()) as { message?: string };
     setMessage(response.ok ? "Application submitted for review." : result.message ?? "Unable to submit application.");
