@@ -854,7 +854,10 @@ function DriverApplicationsPanel({ canManageTenant, onRefresh, session, summary 
     const response = await fetch(`/api/tenant-admin/drivers?tenantId=${summary.tenant.tenant_id}&applicationId=${applicationId}`, { headers: { Authorization: `Bearer ${session.access_token}` } });
     const result = (await response.json()) as { urls?: string[]; message?: string };
     if (!response.ok) window.alert(result.message ?? "Unable to load files.");
-    else setFileUrls((current) => ({ ...current, [applicationId]: result.urls ?? [] }));
+    else {
+      const urls = result.urls ?? [];
+      setFileUrls((current) => ({ ...current, [applicationId]: urls }));
+    }
   }
   async function approve(applicationId: string) {
     const response = await fetch("/api/tenant-admin/drivers", { method: "PATCH", headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify({ kind: "approve_application", tenantId: summary.tenant.tenant_id, applicationId }) });
