@@ -48,6 +48,25 @@ export async function POST(request: Request) {
   }
 }
 
+export async function GET(request: Request) {
+  try {
+    const token = getBearerToken(request);
+    if (!token) throw new Error("Authentication is required.");
+    const url = new URL(request.url);
+    const tenantId = validateTenantId(url.searchParams.get("tenantId"));
+    const applicationId = validateTenantId(url.searchParams.get("applicationId"));
+    const { supabase } = await actor(request);
+    const { data: application, error } = await supabase.from("driver_applications").select("personal_photo_path, vehicle_photo_path, document_path").eq("tenant_id", tenantId).eq("driver_application_id", applicationId).single();
+    if (error || !application) return NextResponse.json({ message: "Application not found." }, { status: 404 });
+    const paths = [application.personal_photo_path, application.vehicle_photo_path, application.document_path].filter((path): path is string => Boolean(path));
+    const { data: signed, error: signedError } = await supabase.storage.from("driver-application-files").createSignedUrls(paths, 600);
+    if (signedError) throw signedError;
+    return NextResponse.json({ urls: signed?.map((item) => item.signedUrl) ?? [] });
+  } catch (error) {
+    return NextResponse.json({ message: error instanceof Error ? error.message : "Unable to load application files." }, { status: 400 });
+  }
+}
+
 export async function PATCH(request: Request) {
   try {
     const body = (await request.json()) as Record<string, unknown>;

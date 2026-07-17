@@ -109,8 +109,8 @@ export type Database = {
         ];
       };
       driver_applications: {
-        Row: { application_status: string; created_at: string; driver_application_id: string; driver_profile_id: string | null; email: string; full_name: string; phone: string | null; review_notes: string | null; reviewed_at: string | null; reviewed_by_person_id: string | null; submitted_at: string; tenant_id: string; updated_at: string };
-        Insert: { application_status?: string; created_at?: string; driver_application_id?: string; driver_profile_id?: string | null; email: string; full_name: string; phone?: string | null; review_notes?: string | null; reviewed_at?: string | null; reviewed_by_person_id?: string | null; submitted_at?: string; tenant_id: string; updated_at?: string };
+        Row: { application_status: string; created_at: string; driver_application_id: string; driver_profile_id: string | null; email: string; full_name: string; phone: string | null; personal_photo_path: string | null; vehicle_photo_path: string | null; document_path: string | null; review_notes: string | null; reviewed_at: string | null; reviewed_by_person_id: string | null; submitted_at: string; tenant_id: string; updated_at: string };
+        Insert: { application_status?: string; created_at?: string; driver_application_id?: string; driver_profile_id?: string | null; email: string; full_name: string; phone?: string | null; personal_photo_path?: string | null; vehicle_photo_path?: string | null; document_path?: string | null; review_notes?: string | null; reviewed_at?: string | null; reviewed_by_person_id?: string | null; submitted_at?: string; tenant_id: string; updated_at?: string };
         Update: Partial<Database["public"]["Tables"]["driver_applications"]["Insert"]>;
         Relationships: [];
       };

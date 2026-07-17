@@ -849,11 +849,17 @@ function InvitationsPanel({
 }
 
 function DriverApplicationsPanel({ canManageTenant, onRefresh, session, summary }: { canManageTenant: boolean; onRefresh: () => void; session: SupabaseAuthSession; summary: TenantSummary }) {
+  async function viewFiles(applicationId: string) {
+    const response = await fetch(`/api/tenant-admin/drivers?tenantId=${summary.tenant.tenant_id}&applicationId=${applicationId}`, { headers: { Authorization: `Bearer ${session.access_token}` } });
+    const result = (await response.json()) as { urls?: string[]; message?: string };
+    if (!response.ok) window.alert(result.message ?? "Unable to load files.");
+    else result.urls?.forEach((url) => window.open(url, "_blank", "noopener,noreferrer"));
+  }
   async function approve(applicationId: string) {
     const response = await fetch("/api/tenant-admin/drivers", { method: "PATCH", headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify({ kind: "approve_application", tenantId: summary.tenant.tenant_id, applicationId }) });
     if (!response.ok) window.alert("Unable to approve application."); else onRefresh();
   }
-  return <section className="panel"><PanelHeader title="Driver applications" description="Review applicants before creating draft driver profiles." /><div className="table-wrap"><table><thead><tr><th>Applicant</th><th>Contact</th><th>Status</th><th>Action</th></tr></thead><tbody>{summary.driverApplications.map((application) => <tr key={application.driver_application_id}><td>{application.full_name}</td><td>{application.email}<span>{application.phone ?? "No phone"}</span></td><td>{application.application_status}</td><td><button className="primary-button" disabled={!canManageTenant || application.application_status === "approved"} onClick={() => void approve(application.driver_application_id)} type="button">Approve and create draft</button></td></tr>)}</tbody></table></div></section>;
+  return <section className="panel"><PanelHeader title="Driver applications" description="Review applicants before creating draft driver profiles." /><div className="table-wrap"><table><thead><tr><th>Applicant</th><th>Contact</th><th>Status</th><th>Action</th></tr></thead><tbody>{summary.driverApplications.map((application) => <tr key={application.driver_application_id}><td>{application.full_name}</td><td>{application.email}<span>{application.phone ?? "No phone"}</span></td><td>{application.application_status}</td><td><div className="row-actions"><button className="secondary-button" disabled={!canManageTenant} onClick={() => void viewFiles(application.driver_application_id)} type="button">View files</button><button className="primary-button" disabled={!canManageTenant || application.application_status === "approved"} onClick={() => void approve(application.driver_application_id)} type="button">Approve and create draft</button></div></td></tr>)}</tbody></table></div></section>;
 }
 
 function DriversPanel({
