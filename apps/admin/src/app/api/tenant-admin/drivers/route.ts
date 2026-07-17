@@ -61,7 +61,7 @@ export async function GET(request: Request) {
     const paths = [application.personal_photo_path, application.vehicle_photo_path, application.document_path].filter((path): path is string => Boolean(path));
     const { data: signed, error: signedError } = await supabase.storage.from("driver-application-files").createSignedUrls(paths, 600);
     if (signedError) throw signedError;
-    return NextResponse.json({ urls: signed?.map((item) => item.signedUrl) ?? [] });
+    return NextResponse.json({ urls: signed?.map((item) => item.signedUrl).filter((url): url is string => Boolean(url)) ?? [] });
   } catch (error) {
     return NextResponse.json({ message: error instanceof Error ? error.message : "Unable to load application files." }, { status: 400 });
   }
