@@ -41,8 +41,8 @@ Production should set the same variables in the hosting environment. The invitat
 match the deployed Admin domain, for example:
 
 ```env
-INVITATION_BASE_URL=https://admin.transportplatform.com
-TENANT_ADMIN_BASE_URL=https://tenant.transportplatform.com
+INVITATION_BASE_URL=https://admin.example.com
+TENANT_ADMIN_BASE_URL=https://tenant.example.com
 ```
 
 The exact production domain can change without code changes because invitation links are

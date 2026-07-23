@@ -1,4 +1,4 @@
-import type { ActorId, AuditContext, CorrelationId, TenantId } from "@transport-platform/auth";
+import type { ActorId, AuditContext, CorrelationId, TenantId } from "@esh-platform/auth";
 
 export type PlatformEventName = string;
 

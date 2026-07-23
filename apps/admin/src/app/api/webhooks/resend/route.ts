@@ -1,10 +1,7 @@
-import { createServiceSupabaseClient } from "@transport-platform/supabase";
+import { createServiceSupabaseClient } from "@esh-platform/supabase";
 import { NextResponse } from "next/server";
 import { getAdminServerConfig } from "@/lib/config";
-import {
-  getInvitationDeliveryUpdate,
-  verifyResendWebhook,
-} from "@/lib/invitations/resend-webhook";
+import { getInvitationDeliveryUpdate, verifyResendWebhook } from "@/lib/invitations/resend-webhook";
 
 export async function POST(request: Request) {
   const payload = await request.text();
@@ -40,7 +37,10 @@ export async function POST(request: Request) {
       throw new Error(readError.message);
     }
 
-    if (!invitation || (update.status === "pending" && invitation.email_delivery_status === "sent")) {
+    if (
+      !invitation ||
+      (update.status === "pending" && invitation.email_delivery_status === "sent")
+    ) {
       return NextResponse.json({ ok: true });
     }
 

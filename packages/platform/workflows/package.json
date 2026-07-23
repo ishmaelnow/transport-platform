@@ -1,5 +1,5 @@
 {
-  "name": "@transport-platform/workflows",
+  "name": "@esh-platform/workflows",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@transport-platform/auth": "workspace:*",
-    "@transport-platform/events": "workspace:*"
+    "@esh-platform/auth": "workspace:*",
+    "@esh-platform/events": "workspace:*"
   }
 }

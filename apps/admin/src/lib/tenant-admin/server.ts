@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import { createAuthenticatedSupabaseClient } from "@transport-platform/supabase";
+import { createAuthenticatedSupabaseClient } from "@esh-platform/supabase";
 import { getAdminSupabaseEnv } from "@/lib/config";
 import {
   foundationTenantRoles,

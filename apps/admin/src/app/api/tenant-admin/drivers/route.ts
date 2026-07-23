@@ -21,8 +21,19 @@ export async function POST(request: Request) {
     const tenantId = validateTenantId(body.tenantId);
     const { supabase, personId } = await actor(request);
     if (body.kind === "application") {
-      if (typeof body.fullName !== "string" || !body.fullName.trim() || typeof body.email !== "string" || !body.email.trim()) throw new Error("Applicant name and email are required.");
-      const { error } = await supabase.from("driver_applications").insert({ tenant_id: tenantId, full_name: body.fullName.trim(), email: body.email.trim().toLowerCase(), phone: typeof body.phone === "string" ? body.phone.trim() || null : null });
+      if (
+        typeof body.fullName !== "string" ||
+        !body.fullName.trim() ||
+        typeof body.email !== "string" ||
+        !body.email.trim()
+      )
+        throw new Error("Applicant name and email are required.");
+      const { error } = await supabase.from("driver_applications").insert({
+        tenant_id: tenantId,
+        full_name: body.fullName.trim(),
+        email: body.email.trim().toLowerCase(),
+        phone: typeof body.phone === "string" ? body.phone.trim() || null : null,
+      });
       if (error) return NextResponse.json({ message: error.message }, { status: 400 });
       return NextResponse.json({ ok: true });
     }
@@ -56,14 +67,32 @@ export async function GET(request: Request) {
     const tenantId = validateTenantId(url.searchParams.get("tenantId"));
     const applicationId = validateTenantId(url.searchParams.get("applicationId"));
     const { supabase } = await actor(request);
-    const { data: application, error } = await supabase.from("driver_applications").select("personal_photo_path, vehicle_photo_path, document_path").eq("tenant_id", tenantId).eq("driver_application_id", applicationId).single();
-    if (error || !application) return NextResponse.json({ message: "Application not found." }, { status: 404 });
-    const paths = [application.personal_photo_path, application.vehicle_photo_path, application.document_path].filter((path): path is string => Boolean(path));
-    const { data: signed, error: signedError } = await supabase.storage.from("driver-application-files").createSignedUrls(paths, 600);
+    const { data: application, error } = await supabase
+      .from("driver_applications")
+      .select("personal_photo_path, vehicle_photo_path, document_path")
+      .eq("tenant_id", tenantId)
+      .eq("driver_application_id", applicationId)
+      .single();
+    if (error || !application)
+      return NextResponse.json({ message: "Application not found." }, { status: 404 });
+    const paths = [
+      application.personal_photo_path,
+      application.vehicle_photo_path,
+      application.document_path,
+    ].filter((path): path is string => Boolean(path));
+    const { data: signed, error: signedError } = await supabase.storage
+      .from("driver-application-files")
+      .createSignedUrls(paths, 600);
     if (signedError) throw signedError;
-    return NextResponse.json({ urls: signed?.map((item) => item.signedUrl).filter((url): url is string => Boolean(url)) ?? [] });
+    return NextResponse.json({
+      urls:
+        signed?.map((item) => item.signedUrl).filter((url): url is string => Boolean(url)) ?? [],
+    });
   } catch (error) {
-    return NextResponse.json({ message: error instanceof Error ? error.message : "Unable to load application files." }, { status: 400 });
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Unable to load application files." },
+      { status: 400 },
+    );
   }
 }
 
@@ -74,7 +103,10 @@ export async function PATCH(request: Request) {
     const { supabase, personId } = await actor(request);
     if (body.kind === "approve_application") {
       const applicationId = validateTenantId(body.applicationId);
-      const { error } = await supabase.rpc("approve_driver_application", { target_application_id: applicationId, actor_id: personId });
+      const { error } = await supabase.rpc("approve_driver_application", {
+        target_application_id: applicationId,
+        actor_id: personId,
+      });
       if (error) return NextResponse.json({ message: error.message }, { status: 400 });
       return NextResponse.json({ ok: true });
     }

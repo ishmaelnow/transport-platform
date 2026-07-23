@@ -1,4 +1,4 @@
-import type { SupabaseAuthSession } from "@transport-platform/supabase";
+import type { SupabaseAuthSession } from "@esh-platform/supabase";
 import type { DriverProfileInput, DriverStatusInput } from "./types";
 
 export async function createDriver(

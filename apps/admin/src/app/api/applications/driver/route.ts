@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAnonymousSupabaseClient } from "@transport-platform/supabase";
+import { createAnonymousSupabaseClient } from "@esh-platform/supabase";
 
 export async function POST(request: Request) {
   try {
@@ -7,25 +7,52 @@ export async function POST(request: Request) {
     const tenantSlug = form.get("tenantSlug");
     const fullName = form.get("fullName");
     const email = form.get("email");
-    if (typeof tenantSlug !== "string" || typeof fullName !== "string" || typeof email !== "string") throw new Error("Application link, name, and email are required.");
+    if (typeof tenantSlug !== "string" || typeof fullName !== "string" || typeof email !== "string")
+      throw new Error("Application link, name, and email are required.");
     const supabase = createAnonymousSupabaseClient();
     const phone = form.get("phone");
-    const { data: applicationId, error } = await supabase.rpc("submit_transport_driver_application", { application_tenant_slug: tenantSlug, applicant_name: fullName, applicant_email: email, applicant_phone: typeof phone === "string" ? phone : null });
+    const { data: applicationId, error } = await supabase.rpc(
+      "submit_transport_driver_application",
+      {
+        application_tenant_slug: tenantSlug,
+        applicant_name: fullName,
+        applicant_email: email,
+        applicant_phone: typeof phone === "string" ? phone : null,
+      },
+    );
     if (error) return NextResponse.json({ message: error.message }, { status: 400 });
     const paths: Record<string, string | null> = { personal: null, vehicle: null, document: null };
-    for (const [field, key] of [["personalPhoto", "personal"], ["vehiclePhoto", "vehicle"], ["document", "document"]] as const) {
+    for (const [field, key] of [
+      ["personalPhoto", "personal"],
+      ["vehiclePhoto", "vehicle"],
+      ["document", "document"],
+    ] as const) {
       const file = form.get(field);
       if (!(file instanceof File) || file.size === 0) continue;
-      if (file.size > 5_000_000 || !["image/jpeg", "image/png", "application/pdf"].includes(file.type)) throw new Error("Files must be JPEG, PNG, or PDF and 5MB or smaller.");
+      if (
+        file.size > 5_000_000 ||
+        !["image/jpeg", "image/png", "application/pdf"].includes(file.type)
+      )
+        throw new Error("Files must be JPEG, PNG, or PDF and 5MB or smaller.");
       const path = `${tenantSlug}/${applicationId}/${field}-${file.name}`;
-      const upload = await supabase.storage.from("driver-application-files").upload(path, file, { upsert: false });
+      const upload = await supabase.storage
+        .from("driver-application-files")
+        .upload(path, file, { upsert: false });
       if (upload.error) throw upload.error;
       paths[key] = path;
     }
-    const attach = await supabase.rpc("attach_driver_application_files", { target_application_id: applicationId, personal_path: paths.personal ?? null, vehicle_path: paths.vehicle ?? null, document_path_value: paths.document ?? null });
+    const attach = await supabase.rpc("attach_driver_application_files", {
+      target_application_id: applicationId,
+      personal_path: paths.personal ?? null,
+      vehicle_path: paths.vehicle ?? null,
+      document_path_value: paths.document ?? null,
+    });
     if (attach.error) throw attach.error;
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return NextResponse.json({ message: error instanceof Error ? error.message : "Unable to submit application." }, { status: 400 });
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Unable to submit application." },
+      { status: 400 },
+    );
   }
 }

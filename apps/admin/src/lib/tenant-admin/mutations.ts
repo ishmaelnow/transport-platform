@@ -1,4 +1,4 @@
-import type { SupabaseAuthSession } from "@transport-platform/supabase";
+import type { SupabaseAuthSession } from "@esh-platform/supabase";
 import type { EditableTenantConfiguration, FoundationTenantRole, MutationResult } from "./types";
 
 export async function updateTenantSettings(

@@ -1,4 +1,4 @@
-import type { DriverProfileRow } from "@transport-platform/supabase";
+import type { DriverProfileRow } from "@esh-platform/supabase";
 
 export const driverStatuses = [
   "draft",

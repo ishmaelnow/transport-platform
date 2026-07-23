@@ -47,10 +47,10 @@ http://localhost:3001/**
 When production domains are selected, add:
 
 ```text
-https://admin.transportplatform.com/invite/accept
-https://admin.transportplatform.com/auth/reset-password
-https://admin.transportplatform.com/**
-https://tenant.transportplatform.com/**
+https://admin.example.com/invite/accept
+https://admin.example.com/auth/reset-password
+https://admin.example.com/**
+https://tenant.example.com/**
 ```
 
 The exact production domains may change. Keep `INVITATION_BASE_URL` and `TENANT_ADMIN_BASE_URL`

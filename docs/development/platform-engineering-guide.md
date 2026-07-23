@@ -248,13 +248,13 @@ Applications may follow framework conventions, but framework structure must not 
 
 Package names should describe ownership and purpose:
 
-- `@transport-platform/config`
-- `@transport-platform/auth`
-- `@transport-platform/supabase`
-- `@transport-platform/events`
-- `@transport-platform/workflows`
-- `@transport-platform/stripe`
-- `@transport-platform/logger`
+- `@esh-platform/config`
+- `@esh-platform/auth`
+- `@esh-platform/supabase`
+- `@esh-platform/events`
+- `@esh-platform/workflows`
+- `@esh-platform/stripe`
+- `@esh-platform/logger`
 
 Avoid vague names:
 

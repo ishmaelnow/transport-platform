@@ -1,5 +1,5 @@
 {
-  "name": "@transport-platform/config",
+  "name": "@esh-platform/config",
   "version": "0.1.0",
   "private": true,
   "type": "module",

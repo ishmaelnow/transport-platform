@@ -109,14 +109,76 @@ export type Database = {
         ];
       };
       driver_applications: {
-        Row: { application_status: string; created_at: string; driver_application_id: string; driver_profile_id: string | null; email: string; full_name: string; phone: string | null; personal_photo_path: string | null; vehicle_photo_path: string | null; document_path: string | null; review_notes: string | null; reviewed_at: string | null; reviewed_by_person_id: string | null; submitted_at: string; tenant_id: string; updated_at: string };
-        Insert: { application_status?: string; created_at?: string; driver_application_id?: string; driver_profile_id?: string | null; email: string; full_name: string; phone?: string | null; personal_photo_path?: string | null; vehicle_photo_path?: string | null; document_path?: string | null; review_notes?: string | null; reviewed_at?: string | null; reviewed_by_person_id?: string | null; submitted_at?: string; tenant_id: string; updated_at?: string };
+        Row: {
+          application_status: string;
+          created_at: string;
+          driver_application_id: string;
+          driver_profile_id: string | null;
+          email: string;
+          full_name: string;
+          phone: string | null;
+          personal_photo_path: string | null;
+          vehicle_photo_path: string | null;
+          document_path: string | null;
+          review_notes: string | null;
+          reviewed_at: string | null;
+          reviewed_by_person_id: string | null;
+          submitted_at: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          application_status?: string;
+          created_at?: string;
+          driver_application_id?: string;
+          driver_profile_id?: string | null;
+          email: string;
+          full_name: string;
+          phone?: string | null;
+          personal_photo_path?: string | null;
+          vehicle_photo_path?: string | null;
+          document_path?: string | null;
+          review_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by_person_id?: string | null;
+          submitted_at?: string;
+          tenant_id: string;
+          updated_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["driver_applications"]["Insert"]>;
         Relationships: [];
       };
       driver_onboarding_checklists: {
-        Row: { driver_profile_id: string; tenant_id: string; personal_details_complete: boolean; personal_photo_complete: boolean; vehicle_details_complete: boolean; vehicle_photo_complete: boolean; documents_reviewed: boolean; review_status: string; review_notes: string | null; reviewed_by_person_id: string | null; reviewed_at: string | null; created_at: string; updated_at: string };
-        Insert: { driver_profile_id: string; tenant_id: string; personal_details_complete?: boolean; personal_photo_complete?: boolean; vehicle_details_complete?: boolean; vehicle_photo_complete?: boolean; documents_reviewed?: boolean; review_status?: string; review_notes?: string | null; reviewed_by_person_id?: string | null; reviewed_at?: string | null; created_at?: string; updated_at?: string };
+        Row: {
+          driver_profile_id: string;
+          tenant_id: string;
+          personal_details_complete: boolean;
+          personal_photo_complete: boolean;
+          vehicle_details_complete: boolean;
+          vehicle_photo_complete: boolean;
+          documents_reviewed: boolean;
+          review_status: string;
+          review_notes: string | null;
+          reviewed_by_person_id: string | null;
+          reviewed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          driver_profile_id: string;
+          tenant_id: string;
+          personal_details_complete?: boolean;
+          personal_photo_complete?: boolean;
+          vehicle_details_complete?: boolean;
+          vehicle_photo_complete?: boolean;
+          documents_reviewed?: boolean;
+          review_status?: string;
+          review_notes?: string | null;
+          reviewed_by_person_id?: string | null;
+          reviewed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["driver_onboarding_checklists"]["Insert"]>;
         Relationships: [];
       };
@@ -768,12 +830,50 @@ export type Database = {
         }[];
       };
       current_person_id: { Args: never; Returns: string };
-      approve_driver_application: { Args: { actor_id: string; target_application_id: string }; Returns: string };
-      submit_driver_application: { Args: { applicant_email: string; applicant_name: string; applicant_phone?: string | null; target_tenant_id: string }; Returns: string };
-      attach_driver_application_files: { Args: { document_path_value?: string | null; personal_path?: string | null; target_application_id: string; vehicle_path?: string | null }; Returns: undefined };
-      submit_driver_application_by_slug: { Args: { applicant_email: string; applicant_name: string; applicant_phone?: string | null; application_slug: string }; Returns: string };
-      submit_transport_driver_application: { Args: { applicant_email: string; applicant_name: string; applicant_phone?: string | null; application_tenant_slug: string }; Returns: string };
-      list_transport_application_tenants: { Args: never; Returns: { display_name: string; tenant_slug: string }[] };
+      approve_driver_application: {
+        Args: { actor_id: string; target_application_id: string };
+        Returns: string;
+      };
+      submit_driver_application: {
+        Args: {
+          applicant_email: string;
+          applicant_name: string;
+          applicant_phone?: string | null;
+          target_tenant_id: string;
+        };
+        Returns: string;
+      };
+      attach_driver_application_files: {
+        Args: {
+          document_path_value?: string | null;
+          personal_path?: string | null;
+          target_application_id: string;
+          vehicle_path?: string | null;
+        };
+        Returns: undefined;
+      };
+      submit_driver_application_by_slug: {
+        Args: {
+          applicant_email: string;
+          applicant_name: string;
+          applicant_phone?: string | null;
+          application_slug: string;
+        };
+        Returns: string;
+      };
+      submit_transport_driver_application: {
+        Args: {
+          applicant_email: string;
+          applicant_name: string;
+          applicant_phone?: string | null;
+          application_tenant_slug: string;
+        };
+        Returns: string;
+      };
+      list_transport_application_tenants: {
+        Args: never;
+        Returns: { display_name: string; tenant_slug: string }[];
+      };
       current_person_is_active: { Args: never; Returns: boolean };
       current_person_normalized_email: { Args: never; Returns: string };
       has_active_platform_role: {

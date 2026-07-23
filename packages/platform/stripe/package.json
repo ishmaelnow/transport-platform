@@ -1,5 +1,5 @@
 {
-  "name": "@transport-platform/stripe",
+  "name": "@esh-platform/stripe",
   "version": "0.1.0",
   "private": true,
   "type": "module",

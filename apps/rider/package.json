@@ -1,5 +1,5 @@
 {
-  "name": "@transport-platform/rider",
+  "name": "@esh-platform/rider",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,9 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@transport-platform/config": "workspace:*",
-    "@transport-platform/logger": "workspace:*",
-    "@transport-platform/supabase": "workspace:*",
+    "@esh-platform/config": "workspace:*",
+    "@esh-platform/logger": "workspace:*",
+    "@esh-platform/supabase": "workspace:*",
     "next": "15.5.20",
     "react": "19.1.0",
     "react-dom": "19.1.0"

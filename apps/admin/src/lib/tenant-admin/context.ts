@@ -3,8 +3,8 @@ import type {
   TenantConfigurationRow,
   TenantMembershipRow,
   TenantRow,
-  TransportSupabaseClient,
-} from "@transport-platform/supabase";
+  PlatformSupabaseClient,
+} from "@esh-platform/supabase";
 import type {
   ActiveTenantOption,
   FoundationTenantRole,
@@ -12,7 +12,7 @@ import type {
   TenantContextResolution,
 } from "./types";
 
-export type AdminSupabaseClient = TransportSupabaseClient;
+export type AdminSupabaseClient = PlatformSupabaseClient;
 
 export type AuthUserReference = {
   id: string;

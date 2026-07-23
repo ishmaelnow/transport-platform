@@ -1,5 +1,5 @@
 {
-  "name": "transport-platform",
+  "name": "esh-platform",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@10.15.0",
@@ -9,9 +9,9 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "dev:admin": "pnpm --filter @transport-platform/admin dev",
-    "dev:rider": "pnpm --filter @transport-platform/rider dev",
-    "dev:driver": "pnpm --filter @transport-platform/driver dev",
+    "dev:admin": "pnpm --filter @esh-platform/admin dev",
+    "dev:rider": "pnpm --filter @esh-platform/rider dev",
+    "dev:driver": "pnpm --filter @esh-platform/driver dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "turbo run lint",

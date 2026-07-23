@@ -1,4 +1,4 @@
-import type { SupabaseAuthSession } from "@transport-platform/supabase";
+import type { SupabaseAuthSession } from "@esh-platform/supabase";
 import type { MutationResult } from "@/lib/tenant-admin/types";
 import type { TenantProvisioningPayload } from "./types";
 

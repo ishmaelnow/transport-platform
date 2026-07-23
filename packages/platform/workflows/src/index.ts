@@ -1,5 +1,5 @@
-import type { ActorId, CorrelationId, TenantId } from "@transport-platform/auth";
-import type { PlatformEvent } from "@transport-platform/events";
+import type { ActorId, CorrelationId, TenantId } from "@esh-platform/auth";
+import type { PlatformEvent } from "@esh-platform/events";
 
 export type WorkflowName = string;
 

@@ -14,7 +14,12 @@ describe("Resend invitation webhooks", () => {
       .digest("base64");
 
     expect(
-      verifyResendWebhook(payload, { id, timestamp, signature: `v1,${signature}` }, secret, 1700000000000),
+      verifyResendWebhook(
+        payload,
+        { id, timestamp, signature: `v1,${signature}` },
+        secret,
+        1700000000000,
+      ),
     ).toMatchObject({ type: "email.delivered" });
   });
 

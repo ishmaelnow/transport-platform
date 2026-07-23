@@ -5,25 +5,25 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./apps/admin/src", import.meta.url)),
-      "@transport-platform/auth": fileURLToPath(
+      "@esh-platform/auth": fileURLToPath(
         new URL("./packages/platform/auth/src/index.ts", import.meta.url),
       ),
-      "@transport-platform/config": fileURLToPath(
+      "@esh-platform/config": fileURLToPath(
         new URL("./packages/platform/config/src/index.ts", import.meta.url),
       ),
-      "@transport-platform/events": fileURLToPath(
+      "@esh-platform/events": fileURLToPath(
         new URL("./packages/platform/events/src/index.ts", import.meta.url),
       ),
-      "@transport-platform/logger": fileURLToPath(
+      "@esh-platform/logger": fileURLToPath(
         new URL("./packages/platform/logger/src/index.ts", import.meta.url),
       ),
-      "@transport-platform/supabase": fileURLToPath(
+      "@esh-platform/supabase": fileURLToPath(
         new URL("./packages/platform/supabase/src/index.ts", import.meta.url),
       ),
-      "@transport-platform/testing": fileURLToPath(
+      "@esh-platform/testing": fileURLToPath(
         new URL("./packages/platform/testing/src/index.ts", import.meta.url),
       ),
-      "@transport-platform/workflows": fileURLToPath(
+      "@esh-platform/workflows": fileURLToPath(
         new URL("./packages/platform/workflows/src/index.ts", import.meta.url),
       ),
     },

@@ -1,4 +1,4 @@
-import type { ActorId, CorrelationId, TenantId } from "@transport-platform/auth";
+import type { ActorId, CorrelationId, TenantId } from "@esh-platform/auth";
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
 

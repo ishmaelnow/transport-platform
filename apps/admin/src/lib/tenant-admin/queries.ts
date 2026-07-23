@@ -1,4 +1,4 @@
-import type { TenantMembershipRow, TenantRoleAssignmentRow } from "@transport-platform/supabase";
+import type { TenantMembershipRow, TenantRoleAssignmentRow } from "@esh-platform/supabase";
 import type { AdminSupabaseClient } from "./context";
 import type { MembershipWithRoles, TenantMemberDirectoryPerson, TenantSummary } from "./types";
 
@@ -51,11 +51,12 @@ export async function loadTenantSummary(
       .select("*")
       .eq("tenant_id", tenantId)
       .order("created_at", { ascending: false }),
+    supabase.from("driver_onboarding_checklists").select("*").eq("tenant_id", tenantId),
     supabase
-      .from("driver_onboarding_checklists")
+      .from("driver_applications")
       .select("*")
-      .eq("tenant_id", tenantId),
-    supabase.from("driver_applications").select("*").eq("tenant_id", tenantId).order("submitted_at", { ascending: false }),
+      .eq("tenant_id", tenantId)
+      .order("submitted_at", { ascending: false }),
   ]);
 
   if (tenantResult.error) {
@@ -89,10 +90,14 @@ export async function loadTenantSummary(
   if (driversResult.error && !driversResult.error.message.includes("driver_profiles")) {
     throw driversResult.error;
   }
-  if (onboardingResult.error && !onboardingResult.error.message.includes("driver_onboarding_checklists")) {
+  if (
+    onboardingResult.error &&
+    !onboardingResult.error.message.includes("driver_onboarding_checklists")
+  ) {
     throw onboardingResult.error;
   }
-  if (applicationsResult.error && !applicationsResult.error.message.includes("driver_applications")) throw applicationsResult.error;
+  if (applicationsResult.error && !applicationsResult.error.message.includes("driver_applications"))
+    throw applicationsResult.error;
 
   const roleAssignments = roleAssignmentsResult.data ?? [];
   const memberships = await attachMembershipDetails(

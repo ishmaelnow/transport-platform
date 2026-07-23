@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { createServiceSupabaseClient } from "@transport-platform/supabase";
+import { createServiceSupabaseClient } from "@esh-platform/supabase";
 import { loadTenantSummary } from "../../../apps/admin/src/lib/tenant-admin/queries";
 import {
   createInvitationTokenHash,

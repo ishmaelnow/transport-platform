@@ -18,14 +18,14 @@
     "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "paths": {
-      "@transport-platform/auth": ["packages/platform/auth/src/index.ts"],
-      "@transport-platform/config": ["packages/platform/config/src/index.ts"],
-      "@transport-platform/events": ["packages/platform/events/src/index.ts"],
-      "@transport-platform/logger": ["packages/platform/logger/src/index.ts"],
-      "@transport-platform/stripe": ["packages/platform/stripe/src/index.ts"],
-      "@transport-platform/supabase": ["packages/platform/supabase/src/index.ts"],
-      "@transport-platform/testing": ["packages/platform/testing/src/index.ts"],
-      "@transport-platform/workflows": ["packages/platform/workflows/src/index.ts"]
+      "@esh-platform/auth": ["packages/platform/auth/src/index.ts"],
+      "@esh-platform/config": ["packages/platform/config/src/index.ts"],
+      "@esh-platform/events": ["packages/platform/events/src/index.ts"],
+      "@esh-platform/logger": ["packages/platform/logger/src/index.ts"],
+      "@esh-platform/stripe": ["packages/platform/stripe/src/index.ts"],
+      "@esh-platform/supabase": ["packages/platform/supabase/src/index.ts"],
+      "@esh-platform/testing": ["packages/platform/testing/src/index.ts"],
+      "@esh-platform/workflows": ["packages/platform/workflows/src/index.ts"]
     }
   }
 }

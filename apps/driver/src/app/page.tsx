@@ -3,7 +3,7 @@ export default function DriverHome() {
     <main className="shell">
       <section>
         <p className="eyebrow">Driver</p>
-        <h1>Transport Platform</h1>
+        <h1>ESH Platform</h1>
         <p className="summary">
           Engineering foundation initialized. No product workflows exist yet.
         </p>

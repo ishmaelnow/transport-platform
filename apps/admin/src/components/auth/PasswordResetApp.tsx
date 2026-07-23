@@ -3,7 +3,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { createBrowserSupabaseClient } from "@transport-platform/supabase";
+import { createBrowserSupabaseClient } from "@esh-platform/supabase";
 import { adminPublicConfig } from "@/lib/config";
 
 export function PasswordResetApp() {

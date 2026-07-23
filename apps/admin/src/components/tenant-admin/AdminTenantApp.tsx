@@ -1,10 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
-import {
-  createBrowserSupabaseClient,
-  type SupabaseAuthSession,
-} from "@transport-platform/supabase";
+import { createBrowserSupabaseClient, type SupabaseAuthSession } from "@esh-platform/supabase";
 import { adminPublicConfig } from "@/lib/config";
 import {
   loadPrincipalTenantContext,
@@ -411,7 +408,12 @@ function ResolvedWorkspace({
         />
       ) : null}
       {activeView === "applications" ? (
-        <DriverApplicationsPanel canManageTenant={canManageTenant} onRefresh={onRefresh} session={session} summary={summary} />
+        <DriverApplicationsPanel
+          canManageTenant={canManageTenant}
+          onRefresh={onRefresh}
+          session={session}
+          summary={summary}
+        />
       ) : null}
     </>
   );
@@ -848,10 +850,23 @@ function InvitationsPanel({
   );
 }
 
-function DriverApplicationsPanel({ canManageTenant, onRefresh, session, summary }: { canManageTenant: boolean; onRefresh: () => void; session: SupabaseAuthSession; summary: TenantSummary }) {
+function DriverApplicationsPanel({
+  canManageTenant,
+  onRefresh,
+  session,
+  summary,
+}: {
+  canManageTenant: boolean;
+  onRefresh: () => void;
+  session: SupabaseAuthSession;
+  summary: TenantSummary;
+}) {
   const [fileUrls, setFileUrls] = useState<Record<string, string[]>>({});
   async function viewFiles(applicationId: string) {
-    const response = await fetch(`/api/tenant-admin/drivers?tenantId=${summary.tenant.tenant_id}&applicationId=${applicationId}`, { headers: { Authorization: `Bearer ${session.access_token}` } });
+    const response = await fetch(
+      `/api/tenant-admin/drivers?tenantId=${summary.tenant.tenant_id}&applicationId=${applicationId}`,
+      { headers: { Authorization: `Bearer ${session.access_token}` } },
+    );
     const result = (await response.json()) as { urls?: string[]; message?: string };
     if (!response.ok) window.alert(result.message ?? "Unable to load files.");
     else {
@@ -860,10 +875,78 @@ function DriverApplicationsPanel({ canManageTenant, onRefresh, session, summary 
     }
   }
   async function approve(applicationId: string) {
-    const response = await fetch("/api/tenant-admin/drivers", { method: "PATCH", headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify({ kind: "approve_application", tenantId: summary.tenant.tenant_id, applicationId }) });
-    if (!response.ok) window.alert("Unable to approve application."); else onRefresh();
+    const response = await fetch("/api/tenant-admin/drivers", {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        kind: "approve_application",
+        tenantId: summary.tenant.tenant_id,
+        applicationId,
+      }),
+    });
+    if (!response.ok) window.alert("Unable to approve application.");
+    else onRefresh();
   }
-  return <section className="panel"><PanelHeader title="Driver applications" description="Review applicants before creating draft driver profiles." /><div className="table-wrap"><table><thead><tr><th>Applicant</th><th>Contact</th><th>Status</th><th>Action</th></tr></thead><tbody>{summary.driverApplications.map((application) => <tr key={application.driver_application_id}><td>{application.full_name}</td><td>{application.email}<span>{application.phone ?? "No phone"}</span></td><td>{application.application_status}</td><td><div className="row-actions"><button className="secondary-button" disabled={!canManageTenant} onClick={() => void viewFiles(application.driver_application_id)} type="button">View files</button>{fileUrls[application.driver_application_id]?.map((url, index) => <a href={url} key={url} rel="noreferrer" target="_blank">Open file {index + 1}</a>)}<button className="primary-button" disabled={!canManageTenant || application.application_status === "approved"} onClick={() => void approve(application.driver_application_id)} type="button">Approve and create draft</button></div></td></tr>)}</tbody></table></div></section>;
+  return (
+    <section className="panel">
+      <PanelHeader
+        title="Driver applications"
+        description="Review applicants before creating draft driver profiles."
+      />
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Applicant</th>
+              <th>Contact</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {summary.driverApplications.map((application) => (
+              <tr key={application.driver_application_id}>
+                <td>{application.full_name}</td>
+                <td>
+                  {application.email}
+                  <span>{application.phone ?? "No phone"}</span>
+                </td>
+                <td>{application.application_status}</td>
+                <td>
+                  <div className="row-actions">
+                    <button
+                      className="secondary-button"
+                      disabled={!canManageTenant}
+                      onClick={() => void viewFiles(application.driver_application_id)}
+                      type="button"
+                    >
+                      View files
+                    </button>
+                    {fileUrls[application.driver_application_id]?.map((url, index) => (
+                      <a href={url} key={url} rel="noreferrer" target="_blank">
+                        Open file {index + 1}
+                      </a>
+                    ))}
+                    <button
+                      className="primary-button"
+                      disabled={!canManageTenant || application.application_status === "approved"}
+                      onClick={() => void approve(application.driver_application_id)}
+                      type="button"
+                    >
+                      Approve and create draft
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
 }
 
 function DriversPanel({
@@ -931,18 +1014,60 @@ function DriversPanel({
     else onRefresh();
   }
 
-  async function updateChecklist(driverProfileId: string, field: "personalDetailsComplete" | "personalPhotoComplete" | "vehicleDetailsComplete" | "vehiclePhotoComplete" | "documentsReviewed", value: boolean) {
-    const result = await updateDriverOnboarding(session, summary.tenant.tenant_id, driverProfileId, { [field]: value });
+  async function updateChecklist(
+    driverProfileId: string,
+    field:
+      | "personalDetailsComplete"
+      | "personalPhotoComplete"
+      | "vehicleDetailsComplete"
+      | "vehiclePhotoComplete"
+      | "documentsReviewed",
+    value: boolean,
+  ) {
+    const result = await updateDriverOnboarding(
+      session,
+      summary.tenant.tenant_id,
+      driverProfileId,
+      { [field]: value },
+    );
     if (!result.ok) window.alert(result.message);
-    else setChecklists((current) => current.map((item) => item.driver_profile_id === driverProfileId ? { ...item, [{ personalDetailsComplete: "personal_details_complete", personalPhotoComplete: "personal_photo_complete", vehicleDetailsComplete: "vehicle_details_complete", vehiclePhotoComplete: "vehicle_photo_complete", documentsReviewed: "documents_reviewed" }[field]]: value } : item));
+    else
+      setChecklists((current) =>
+        current.map((item) =>
+          item.driver_profile_id === driverProfileId
+            ? {
+                ...item,
+                [{
+                  personalDetailsComplete: "personal_details_complete",
+                  personalPhotoComplete: "personal_photo_complete",
+                  vehicleDetailsComplete: "vehicle_details_complete",
+                  vehiclePhotoComplete: "vehicle_photo_complete",
+                  documentsReviewed: "documents_reviewed",
+                }[field]]: value,
+              }
+            : item,
+        ),
+      );
   }
 
   async function reviewChecklist(driverProfileId: string, reviewStatus: "approved" | "rejected") {
     const reviewNotes = reviewStatus === "rejected" ? window.prompt("Reason required") : null;
     if (reviewStatus === "rejected" && !reviewNotes) return;
-    const result = await updateDriverOnboarding(session, summary.tenant.tenant_id, driverProfileId, { reviewStatus, reviewNotes });
+    const result = await updateDriverOnboarding(
+      session,
+      summary.tenant.tenant_id,
+      driverProfileId,
+      { reviewStatus, reviewNotes },
+    );
     if (!result.ok) window.alert(result.message);
-    else setChecklists((current) => current.map((item) => item.driver_profile_id === driverProfileId ? { ...item, review_status: reviewStatus, review_notes: reviewNotes } : item));
+    else
+      setChecklists((current) =>
+        current.map((item) =>
+          item.driver_profile_id === driverProfileId
+            ? { ...item, review_status: reviewStatus, review_notes: reviewNotes }
+            : item,
+        ),
+      );
   }
 
   return (
@@ -1005,7 +1130,13 @@ function DriversPanel({
               className="secondary-button"
               onClick={() => {
                 setEditingId(null);
-                setForm({ driverNumber: "", displayName: "", email: "", phone: "", onboardingDate: "" });
+                setForm({
+                  driverNumber: "",
+                  displayName: "",
+                  email: "",
+                  phone: "",
+                  onboardingDate: "",
+                });
               }}
               type="button"
             >
@@ -1052,7 +1183,13 @@ function DriversPanel({
                             phone: driver.phone ?? "",
                             onboardingDate: driver.onboarding_date ?? "",
                           });
-                          window.setTimeout(() => document.querySelector("form.settings-grid")?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+                          window.setTimeout(
+                            () =>
+                              document
+                                .querySelector("form.settings-grid")
+                                ?.scrollIntoView({ behavior: "smooth", block: "center" }),
+                            0,
+                          );
                         }}
                         type="button"
                       >
@@ -1099,20 +1236,72 @@ function DriversPanel({
                         </button>
                       ) : null}
                       {(() => {
-                        const checklist = checklists.find((item) => item.driver_profile_id === driver.driver_profile_id);
+                        const checklist = checklists.find(
+                          (item) => item.driver_profile_id === driver.driver_profile_id,
+                        );
                         if (!checklist) return null;
-                        const complete = checklist.personal_details_complete && checklist.personal_photo_complete && checklist.vehicle_details_complete && checklist.vehicle_photo_complete && checklist.documents_reviewed;
+                        const complete =
+                          checklist.personal_details_complete &&
+                          checklist.personal_photo_complete &&
+                          checklist.vehicle_details_complete &&
+                          checklist.vehicle_photo_complete &&
+                          checklist.documents_reviewed;
                         return (
                           <div className="onboarding-checklist">
                             <span>Onboarding: {checklist.review_status}</span>
-                            {(["personal_details_complete", "personal_photo_complete", "vehicle_details_complete", "vehicle_photo_complete", "documents_reviewed"] as const).map((field) => (
+                            {(
+                              [
+                                "personal_details_complete",
+                                "personal_photo_complete",
+                                "vehicle_details_complete",
+                                "vehicle_photo_complete",
+                                "documents_reviewed",
+                              ] as const
+                            ).map((field) => (
                               <label key={field}>
-                                <input checked={checklist[field]} disabled={!canManageTenant || !enabled} onChange={(event) => void updateChecklist(driver.driver_profile_id, ({ personal_details_complete: "personalDetailsComplete", personal_photo_complete: "personalPhotoComplete", vehicle_details_complete: "vehicleDetailsComplete", vehicle_photo_complete: "vehiclePhotoComplete", documents_reviewed: "documentsReviewed" } as const)[field], event.target.checked)} type="checkbox" />
+                                <input
+                                  checked={checklist[field]}
+                                  disabled={!canManageTenant || !enabled}
+                                  onChange={(event) =>
+                                    void updateChecklist(
+                                      driver.driver_profile_id,
+                                      (
+                                        {
+                                          personal_details_complete: "personalDetailsComplete",
+                                          personal_photo_complete: "personalPhotoComplete",
+                                          vehicle_details_complete: "vehicleDetailsComplete",
+                                          vehicle_photo_complete: "vehiclePhotoComplete",
+                                          documents_reviewed: "documentsReviewed",
+                                        } as const
+                                      )[field],
+                                      event.target.checked,
+                                    )
+                                  }
+                                  type="checkbox"
+                                />
                                 {field.replaceAll("_", " ")}
                               </label>
                             ))}
-                            <button className="secondary-button" disabled={!canManageTenant || !enabled || !complete} onClick={() => void reviewChecklist(driver.driver_profile_id, "approved")} type="button">Approve onboarding</button>
-                            <button className="danger-button" disabled={!canManageTenant || !enabled} onClick={() => void reviewChecklist(driver.driver_profile_id, "rejected")} type="button">Reject</button>
+                            <button
+                              className="secondary-button"
+                              disabled={!canManageTenant || !enabled || !complete}
+                              onClick={() =>
+                                void reviewChecklist(driver.driver_profile_id, "approved")
+                              }
+                              type="button"
+                            >
+                              Approve onboarding
+                            </button>
+                            <button
+                              className="danger-button"
+                              disabled={!canManageTenant || !enabled}
+                              onClick={() =>
+                                void reviewChecklist(driver.driver_profile_id, "rejected")
+                              }
+                              type="button"
+                            >
+                              Reject
+                            </button>
                           </div>
                         );
                       })()}
@@ -1168,7 +1357,8 @@ function DriverTextInput({
         onChange={(event) =>
           setForm((form) => ({
             ...form,
-            [name]: name === "driverNumber" ? event.target.value.replace(/\D/g, "") : event.target.value,
+            [name]:
+              name === "driverNumber" ? event.target.value.replace(/\D/g, "") : event.target.value,
           }))
         }
         type={type}

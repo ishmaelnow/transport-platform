@@ -1,10 +1,10 @@
-# Transportation SaaS Platform
+# ESH Platform
 
-This repository is the foundation for a modern multi-tenant SaaS platform for transportation companies.
+ESH Platform is a generic, modular foundation for building and operating multi-tenant SaaS products. Transportation is the first business capability implemented in the repository, not a constraint on the platform's identity or future use.
 
 The project is organized as a modular monorepo. The structure separates deployable applications, backend services, shared packages, infrastructure, documentation, developer tooling, tests, deployment assets, and environment configuration.
 
-No business features, APIs, screens, database schemas, or domain models are defined yet. This repository currently establishes the architectural boundaries that future product work will build on.
+The repository currently includes shared identity, tenancy, configuration, observability, payments, data-access, and workflow foundations, plus initial transportation capabilities. New business capabilities should use the same boundaries without coupling the shared platform layer to a particular industry.
 
 ## Repository Structure
 
@@ -24,7 +24,7 @@ tests/         Cross-cutting test suites and shared test assets.
 
 - Multi-tenancy is a platform concern and must be designed into shared foundations before feature work begins.
 - Business capabilities should grow in isolated modules instead of spreading through shared infrastructure.
-- Platform concerns and transportation business concerns should remain visibly separated.
+- Platform concerns and business-domain concerns, including transportation, should remain visibly separated.
 - Shared packages must contain reusable platform primitives, not product-specific workflows.
 - Applications should depend on services and packages through stable contracts.
 - Infrastructure, deployment, and runtime configuration should be explicit and reviewable.
@@ -32,4 +32,8 @@ tests/         Cross-cutting test suites and shared test assets.
 
 ## Current Scope
 
-This initial foundation intentionally avoids implementation. Future work can add framework-specific files, service contracts, schemas, and product modules once the technical stack and first business capability are selected.
+The current implementation establishes the platform foundation and the first transportation workflows. Future product modules may target transportation or other industries while preserving the platform/business separation described above.
+
+## Development and deployment
+
+See `docs/development/environment-variables.md` for the complete environment-variable inventory and `deploy/vercel.md` for the three-project Vercel setup.

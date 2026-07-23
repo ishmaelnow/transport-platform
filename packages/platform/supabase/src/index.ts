@@ -1,11 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
-import { getPublicSupabaseConfig } from "@transport-platform/config";
+import { getPublicSupabaseConfig } from "@esh-platform/config";
 import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Tables, TablesInsert, TablesUpdate } from "./database.types";
 
 export type { Database, Json, Tables, TablesInsert, TablesUpdate } from "./database.types";
 export type SupabaseAuthSession = Session;
-export type TransportSupabaseClient = SupabaseClient<Database>;
+export type PlatformSupabaseClient = SupabaseClient<Database>;
 export type PublicSupabaseClientConfig = {
   url: string;
   anonKey: string;
@@ -47,19 +47,19 @@ export type TenantAuditEventRow = Tables<"tenant_audit_events">;
 export type ActiveTenantPreferenceRow = Tables<"active_tenant_preferences">;
 
 declare global {
-  var __transportPlatformBrowserSupabaseClient: TransportSupabaseClient | undefined;
+  var __eshPlatformBrowserSupabaseClient: PlatformSupabaseClient | undefined;
 }
 
 export function createBrowserSupabaseClient(config?: PublicSupabaseClientConfig) {
-  if (globalThis.__transportPlatformBrowserSupabaseClient) {
-    return globalThis.__transportPlatformBrowserSupabaseClient;
+  if (globalThis.__eshPlatformBrowserSupabaseClient) {
+    return globalThis.__eshPlatformBrowserSupabaseClient;
   }
 
   const { url, anonKey } = config ?? getPublicSupabaseConfig();
 
-  globalThis.__transportPlatformBrowserSupabaseClient = createClient<Database>(url, anonKey);
+  globalThis.__eshPlatformBrowserSupabaseClient = createClient<Database>(url, anonKey);
 
-  return globalThis.__transportPlatformBrowserSupabaseClient;
+  return globalThis.__eshPlatformBrowserSupabaseClient;
 }
 
 export function createAuthenticatedSupabaseClient(

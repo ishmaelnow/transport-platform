@@ -4,7 +4,7 @@ import type {
   TenantConfigurationRow,
   TenantInvitationRow,
   TenantRow,
-} from "@transport-platform/supabase";
+} from "@esh-platform/supabase";
 
 export const platformProvisioningRoles = ["platform_owner", "platform_admin"] as const;
 

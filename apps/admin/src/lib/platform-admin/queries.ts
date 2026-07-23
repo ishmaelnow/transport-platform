@@ -3,7 +3,7 @@ import type {
   TenantConfigurationRow,
   TenantInvitationRow,
   TenantRow,
-} from "@transport-platform/supabase";
+} from "@esh-platform/supabase";
 import type { AdminSupabaseClient } from "@/lib/tenant-admin/context";
 import type { PlatformAdminSummary, PlatformTenantListItem } from "./types";
 

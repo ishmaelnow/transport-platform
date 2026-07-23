@@ -194,7 +194,7 @@ Use local Supabase public values:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 \
 NEXT_PUBLIC_SUPABASE_ANON_KEY='sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH' \
-pnpm --filter @transport-platform/admin dev
+pnpm --filter @esh-platform/admin dev
 ```
 
 Open:
@@ -222,5 +222,5 @@ If the dev server reports missing Supabase env vars, restart it with the `NEXT_P
 If Turbopack reports a workspace-root or `next/package.json` resolution error in WSL, use the Admin dev script, which runs Next with webpack:
 
 ```bash
-pnpm --filter @transport-platform/admin dev
+pnpm --filter @esh-platform/admin dev
 ```

@@ -2,11 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: [
-    "@transport-platform/config",
-    "@transport-platform/logger",
-    "@transport-platform/supabase",
-  ],
+  transpilePackages: ["@esh-platform/config", "@esh-platform/logger", "@esh-platform/supabase"],
 };
 
 export default nextConfig;

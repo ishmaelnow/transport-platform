@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import "./styles.css";
 
 export const metadata: Metadata = {
-  title: "Transport Platform Driver",
-  description: "Driver workspace for the transportation platform.",
+  title: "ESH Platform Driver",
+  description: "Driver workspace for ESH Platform's transportation capability.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

@@ -3,10 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {
-  createBrowserSupabaseClient,
-  type SupabaseAuthSession,
-} from "@transport-platform/supabase";
+import { createBrowserSupabaseClient, type SupabaseAuthSession } from "@esh-platform/supabase";
 import { adminPublicConfig } from "@/lib/config";
 
 type InvitationStatus =

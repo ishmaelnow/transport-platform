@@ -1,4 +1,4 @@
-import type { DriverProfileRow } from "@transport-platform/supabase";
+import type { DriverProfileRow } from "@esh-platform/supabase";
 import type { AdminSupabaseClient } from "@/lib/tenant-admin/context";
 
 export async function loadDriverProfiles(supabase: AdminSupabaseClient, tenantId: string) {

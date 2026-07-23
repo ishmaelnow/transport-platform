@@ -11,7 +11,7 @@ import type {
   DriverProfileRow,
   DriverOnboardingChecklistRow,
   DriverApplicationRow,
-} from "@transport-platform/supabase";
+} from "@esh-platform/supabase";
 
 export const foundationTenantRoles = ["tenant_owner", "tenant_admin", "tenant_member"] as const;
 

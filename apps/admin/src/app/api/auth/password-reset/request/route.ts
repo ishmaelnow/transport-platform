@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAnonymousSupabaseClient } from "@transport-platform/supabase";
+import { createAnonymousSupabaseClient } from "@esh-platform/supabase";
 import { getAdminServerConfig, getAdminSupabaseEnv } from "@/lib/config";
 import { hashRawInvitationToken } from "@/lib/invitations/server";
 import { normalizeEmail } from "@/lib/tenant-admin/server";

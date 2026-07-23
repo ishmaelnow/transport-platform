@@ -6,7 +6,7 @@ import {
   createBrowserSupabaseClient,
   type PersonProfileRow,
   type SupabaseAuthSession,
-} from "@transport-platform/supabase";
+} from "@esh-platform/supabase";
 import { adminPublicConfig } from "@/lib/config";
 import {
   closeProvisioningTenant,
@@ -17,7 +17,7 @@ import { setTenantCapability } from "@/lib/platform-admin/mutations";
 import { loadPlatformAdminSummary } from "@/lib/platform-admin/queries";
 import type { PlatformAdminSummary, TenantProvisioningPayload } from "@/lib/platform-admin/types";
 
-const platformProvisioningDraftKey = "transport-platform:platform-provisioning-draft";
+const platformProvisioningDraftKey = "esh-platform:platform-provisioning-draft";
 
 const defaultTenantProvisioningPayload: TenantProvisioningPayload = {
   displayName: "",

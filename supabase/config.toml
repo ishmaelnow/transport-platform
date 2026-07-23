@@ -1,4 +1,4 @@
-project_id = "transport-platform"
+project_id = "esh-platform"
 
 [api]
 enabled = true
