@@ -6,4 +6,5 @@ Future topics should include environment management, deployment process, observa
 
 Current operations documents:
 
+- [Resend Account Recovery and Credential Rotation Plan](./resend-account-recovery-plan.md)
 - [Supabase Integration Readiness](./supabase-integration-readiness.md)
